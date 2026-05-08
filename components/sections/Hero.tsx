@@ -50,7 +50,7 @@ export default function Hero() {
         className="t-mono"
         style={{ marginTop: 18, fontSize: 13, color: 'var(--color-text-dimmed)' }}
       >
-        theory · HaskTorch · Semiotics editor
+        Logic · AI · Semiotics
       </div>
     </section>
   )
