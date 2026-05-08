@@ -41,16 +41,16 @@ export default function Hero() {
         <LinkButton href="https://doi.org/10.48550/arXiv.2604.24612" variant="primary" big external>
           Read the paper <span style={{ opacity: 0.7 }}>↗</span>
         </LinkButton>
-        <OpenEditorButton variant="secondary" big />
         <LinkButton href="https://github.com/NeSyCat" variant="secondary" big external>
           <GitHubIcon size={14} /> GitHub
         </LinkButton>
+        <OpenEditorButton variant="secondary" big />
       </div>
       <div
         className="t-mono"
         style={{ marginTop: 18, fontSize: 13, color: 'var(--color-text-dimmed)' }}
       >
-        theory · HaskTorch · Semiotics editor
+        Logic · AI · Semiotics
       </div>
     </section>
   )
