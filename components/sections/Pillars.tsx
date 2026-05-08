@@ -1,7 +1,7 @@
 const ACC = '59, 130, 246'
 
 type Pillar = {
-  num: string
+  letter: string
   name: string
   blurb: string
   href: string
@@ -11,25 +11,25 @@ type Pillar = {
 
 const PILLARS: Pillar[] = [
   {
-    num: 'α',
-    name: 'Theory',
+    letter: 'L',
+    name: 'Logic',
     blurb:
-      'A formal account of the framework: six layers, six components per layer, written in the categorical-logic style — every formula carries both a syntactic presentation and Haskell-typed semantics.',
+      'The formal core. Categorical logic, monads, and the syntax/semantics duality that lets a single formula specialise to classical, fuzzy, and probabilistic readings — published as a paper on arXiv.',
     href: 'https://doi.org/10.48550/arXiv.2604.24612',
     cta: 'Read on arXiv',
     external: true,
   },
   {
-    num: 'β',
-    name: 'HaskTorch',
+    letter: 'A',
+    name: 'AI',
     blurb:
-      'The reference implementation in Haskell. Six modules, one per theoretical layer, with runnable benchmarks and a binary-classification example wired through measure-theoretic and geometric universes.',
+      'The neuro-symbolic implementation. HaskTorch ports the categorical framework into Haskell — modules per theoretical layer, runnable benchmarks, a binary-classification example wired through measure-theoretic and geometric universes.',
     href: 'https://github.com/NeSyCat',
     cta: 'View on GitHub',
     external: true,
   },
   {
-    num: 'γ',
+    letter: 'S',
     name: 'Semiotics',
     blurb:
       'The diagram editor. Compose shapes, wire their points, round-trip diagrams as JSON — the visible surface for authoring the string diagrams that the codegen layer compiles to runnable code.',
@@ -67,7 +67,7 @@ export default function Pillars() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
         {PILLARS.map((p) => (
           <div
-            key={p.num}
+            key={p.letter}
             style={{
               padding: 24,
               border: '1px solid var(--color-glass-border)',
@@ -81,9 +81,9 @@ export default function Pillars() {
           >
             <div
               className="t-mono"
-              style={{ fontSize: 13, color: `rgba(${ACC},0.9)`, fontWeight: 600 }}
+              style={{ fontSize: 13, color: `rgba(${ACC},0.9)`, fontWeight: 600, letterSpacing: '0.08em' }}
             >
-              {p.num}
+              {p.letter}
             </div>
             <div
               style={{
