@@ -21,17 +21,16 @@ export default function Footer() {
     >
       <Logo />
       <div className="t-mono" style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
-        <a href="https://github.com/NeSyCat" target="_blank" rel="noreferrer" style={linkStyle}>
-          github.com/NeSyCat
-        </a>
         <a href="https://doi.org/10.48550/arXiv.2604.24612" target="_blank" rel="noreferrer" style={linkStyle}>
           paper
+        </a>
+        <a href="https://github.com/NeSyCat" target="_blank" rel="noreferrer" style={linkStyle}>
+          github.com/NeSyCat
         </a>
         <a href="https://semiotics.nesycat.com/" target="_blank" rel="noreferrer" style={linkStyle}>
           editor
         </a>
       </div>
-      <span className="t-mono">Daniel Romero Schellhorn · 2026</span>
     </footer>
   )
 }

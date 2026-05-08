@@ -43,18 +43,6 @@ export default async function Paper() {
           <FallbackCard key={id} input={id} />
         ))}
       </div>
-
-      <p
-        style={{
-          marginTop: 24,
-          fontSize: 12,
-          color: 'var(--color-text-dimmed)',
-        }}
-      >
-        New papers land here automatically — add an arXiv id (or full DOI /
-        abs URL) to <span className="t-mono">lib/papers.ts</span>. Metadata is
-        pulled live from arXiv and cached for 24 hours.
-      </p>
     </section>
   )
 }
