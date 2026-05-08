@@ -80,12 +80,6 @@ export default function Pillars() {
             }}
           >
             <div
-              className="t-mono"
-              style={{ fontSize: 13, color: `rgba(${ACC},0.9)`, fontWeight: 600, letterSpacing: '0.08em' }}
-            >
-              {p.letter}
-            </div>
-            <div
               style={{
                 fontSize: 20,
                 fontWeight: 600,
