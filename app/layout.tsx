@@ -20,11 +20,27 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const title =
+  "NeSyCat Torch — A differentiable tensor implementation of categorical semantics for neurosymbolic learning";
+const description =
+  "NeSyCat Torch is the neural implementation of NeSyCat: classical, fuzzy, probabilistic and neural semantics under one inductive definition of truth, parametric in a strong monad. A lazy log-tensor monad makes it differentiable; on MNIST addition the HaskTorch, JAX and PyTorch backends match or beat LTN, DeepProbLog and DeepStochLog.";
+
 export const metadata: Metadata = {
-  title:
-    "NeSyCat Torch — A differentiable tensor implementation of categorical semantics for neurosymbolic learning",
-  description:
-    "NeSyCat Torch is the neural implementation of NeSyCat: classical, fuzzy, probabilistic and neural semantics under one inductive definition of truth, parametric in a strong monad. A lazy log-tensor monad makes it differentiable; on MNIST addition the HaskTorch, JAX and PyTorch backends match or beat LTN, DeepProbLog and DeepStochLog.",
+  metadataBase: new URL("https://nesycat.org"),
+  title,
+  description,
+  openGraph: {
+    title,
+    description,
+    url: "https://nesycat.org",
+    siteName: "NeSyCat Torch",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+  },
 };
 
 export default function RootLayout({
