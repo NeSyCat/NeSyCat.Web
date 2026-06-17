@@ -10,29 +10,30 @@ export default function Nav() {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: '20px 40px',
-        borderBottom: '1px solid var(--color-glass-border)',
+        padding: '16px 40px',
+        borderBottom: '1px solid var(--color-border)',
         position: 'sticky',
         top: 0,
         zIndex: 10,
-        background: 'rgba(15,15,20,0.85)',
-        backdropFilter: 'blur(8px)',
-        WebkitBackdropFilter: 'blur(8px)',
+        background: 'rgba(250, 250, 249, 0.8)',
+        backdropFilter: 'saturate(180%) blur(8px)',
+        WebkitBackdropFilter: 'saturate(180%) blur(8px)',
       }}
     >
       <Logo />
       <div
         style={{
           display: 'flex',
-          gap: 28,
-          fontSize: 13,
-          color: 'var(--color-text-muted)',
+          gap: 26,
+          fontSize: 13.5,
+          color: 'var(--color-text-secondary)',
           fontWeight: 500,
         }}
       >
-        <a href="#about" style={linkStyle}>About</a>
-        <a href="#pillars" style={linkStyle}>Pillars</a>
+        <a href="#abstract" style={linkStyle}>Abstract</a>
+        <a href="#monads" style={linkStyle}>Monads</a>
         <a href="#layers" style={linkStyle}>Layers</a>
+        <a href="#benchmarks" style={linkStyle}>Results</a>
         <a href="#paper" style={linkStyle}>Paper</a>
         <a href="https://github.com/NeSyCat" style={linkStyle} target="_blank" rel="noreferrer">GitHub</a>
       </div>

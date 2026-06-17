@@ -1,94 +1,95 @@
 @import "tailwindcss";
 
-:root {
-  --color-canvas-bg:       #0f0f14;
-  --color-glass-panel-bg:  rgba(15, 15, 20, 0.4);
-  --color-glass-button-bg: rgba(255, 255, 255, 0.06);
-  --color-glass-border:    rgba(255, 255, 255, 0.08);
-  --color-text-primary:    #ffffff;
-  --color-text-secondary:  rgba(255, 255, 255, 0.8);
-  --color-text-muted:      rgba(255, 255, 255, 0.55);
-  --color-text-dimmed:     rgba(255, 255, 255, 0.35);
-  --color-accent-blue:     rgb(59, 130, 246);
-  --color-accent-rgb:      59, 130, 246;
-  --size-radius-md:        8px;
-  --effect-blur:           3px;
+/* ── Live design system (single source of truth) ─────────────────────
+   The Admination Design System is referenced, NOT copied: the
+   `admination-design-system` dependency is a local `file:` package, so
+   `node_modules/admination-design-system` is a symlink to the real repo
+   (Admination/…/0-foundations/admination-design-system). Editing a token
+   or component there changes this site; deleting it breaks the build.
+
+   The DS stylesheet itself (its real token + component files) is pulled
+   in by `app/layout.tsx` via a side-effect import, so Turbopack's CSS
+   pipeline inlines the DS's nested `@import url(…)` chain correctly.
+   Tailwind's own @import inliner drops that url-form chain, so the DS is
+   deliberately kept out of this Tailwind-processed file.
+   ──────────────────────────────────────────────────────────────────── */
+
+/* ── NeSyCat.Web-only additions ──────────────────────────────────────
+   The product DS targets an admin app, so it ships no marketing-scale
+   display type. These helpers add that on top. They CONSUME DS tokens
+   via var(--…) and never redefine them. Kept unlayered (like the DS)
+   so .btn--lg can extend the DS's unlayered .btn.
+   ──────────────────────────────────────────────────────────────────── */
+.t-display {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6vw, 4rem); /* 40 → 64px */
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.04;
+  color: var(--color-foreground);
+}
+.t-eyebrow {
+  font-family: var(--font-caption);
+  font-size: var(--text-caption);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+.t-lead {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: var(--lh-body);
+  color: var(--color-text-secondary);
+}
+.t-num {
+  font-feature-settings: 'tnum';
 }
 
-@theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Large CTA — extends the DS pill .btn for hero-scale actions. */
+.btn--lg {
+  height: 44px;
+  padding: 0 22px;
+  font-size: 0.9375rem;
+  gap: 8px;
+}
+
+/* Static content surface for marketing cards (pillars, layers, monads…).
+   The DS .card is an INTERACTIVE task card (cursor:pointer, hover tint);
+   this is its calm, static cousin built from the same DS tokens. */
+.surface {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Monospace for code/identifiers — the DS maps --font-mono to Geist
+   (proportional) on purpose; code reads better mono, so NeSyCat.Web adds
+   Geist Mono (loaded by next/font) on top, without touching the DS token. */
+.t-code {
+  font-family: var(--font-geist-mono), 'SF Mono', Menlo, ui-monospace, monospace;
+  font-feature-settings: 'tnum';
+}
+
+/* Responsive two-column split (label | body). Inline styles can't express
+   media queries, so it lives here: single column on narrow screens, a
+   1fr / 1.4fr split once there's room. */
+.split-2 {
+  display: grid;
+  gap: 56px;
+  align-items: start;
+}
+@media (min-width: 760px) {
+  .split-2 {
+    grid-template-columns: 1fr 1.4fr;
+  }
 }
 
 body {
-  background: var(--color-canvas-bg);
+  background: var(--color-background);
   color: var(--color-text-secondary);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
   min-height: 100vh;
 }
-
-@layer components {
-  .t-display {
-    font-size: 48px;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    line-height: 1.05;
-    color: var(--color-text-primary);
-  }
-  .t-h1 {
-    font-size: 28px;
-    font-weight: 600;
-    line-height: 1.2;
-    letter-spacing: -0.01em;
-    color: var(--color-text-primary);
-  }
-  .t-h2 {
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1.3;
-    color: var(--color-text-primary);
-  }
-  .t-body {
-    font-size: 16px;
-    font-weight: 400;
-    line-height: 1.5;
-    color: var(--color-text-secondary);
-  }
-  .t-small {
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 1.5;
-    color: var(--color-text-secondary);
-  }
-  .t-caption {
-    font-family: var(--font-mono), 'SF Mono', Menlo, ui-monospace, monospace;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--color-text-muted);
-  }
-  .t-mono {
-    font-family: var(--font-mono), 'SF Mono', Menlo, ui-monospace, monospace;
-    font-size: 14px;
-    font-weight: 500;
-  }
-}
-
-* {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
-}
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.22);
-}
-::-webkit-scrollbar-corner { background: transparent; }
