@@ -1,11 +1,14 @@
-import About from '@/components/sections/About'
+import Abstract from '@/components/sections/Abstract'
+import Benchmarks from '@/components/sections/Benchmarks'
+import Example from '@/components/sections/Example'
 import Footer from '@/components/sections/Footer'
 import Hero from '@/components/sections/Hero'
 import Layers from '@/components/sections/Layers'
+import Monads from '@/components/sections/Monads'
 import Nav from '@/components/sections/Nav'
 import Paper from '@/components/sections/Paper'
-import Pillars from '@/components/sections/Pillars'
 import Repos from '@/components/sections/Repos'
+import Symbols from '@/components/sections/Symbols'
 
 export default function Home() {
   return (
@@ -13,9 +16,12 @@ export default function Home() {
       <Nav />
       <main style={{ flex: 1 }}>
         <Hero />
-        <About />
-        <Pillars />
+        <Abstract />
+        <Monads />
         <Layers />
+        <Symbols />
+        <Example />
+        <Benchmarks />
         <Paper />
         <Repos />
       </main>

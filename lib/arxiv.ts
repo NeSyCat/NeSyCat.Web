@@ -40,7 +40,7 @@ export async function fetchArxiv(input: string): Promise<ArxivPaper | null> {
   let xml: string
   try {
     const res = await fetch(`${FEED_URL}?id_list=${id}`, {
-      headers: { 'User-Agent': 'nesycat-web/0.1 (https://nesycat.com)' },
+      headers: { 'User-Agent': 'nesycat-web/0.1 (https://nesycat.org)' },
       next: { revalidate: 86_400 },
     })
     if (!res.ok) return null

@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // The Admination design system is a vendored submodule — its source is
+    // owned and linted in its own repo, not here.
+    "vendor/**",
   ]),
 ]);
 
