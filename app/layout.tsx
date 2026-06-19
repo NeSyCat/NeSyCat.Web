@@ -8,6 +8,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 // @import url(…) chain. Must come before globals.css so Tailwind/local
 // rules can layer on top. Edit/delete the DS → this site changes/breaks.
 import "admination-design-system/components/index.css";
+import "katex/dist/katex.min.css";
 import "./globals.css";
 
 const geistSans = Geist({

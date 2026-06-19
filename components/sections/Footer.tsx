@@ -6,8 +6,7 @@ export default function Footer() {
   return (
     <footer
       style={{
-        padding: '28px 48px 40px',
-        borderTop: '1px solid var(--color-border)',
+        padding: '24px 48px 40px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
