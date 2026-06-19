@@ -44,9 +44,9 @@ export default function Nav() {
       <div className="pill-cluster" style={{ justifySelf: 'start' }}>
         <div className="pill">
           <a href="#top" className="btn" style={{ fontWeight: 600, letterSpacing: '-0.01em' }}>
-            <svg viewBox="0 0 24 24" aria-hidden="true" style={{ color: 'var(--color-primary)', width: 20, height: 20 }}>
-              <polygon points="12,4 20,12 12,20 4,12" />
-              <circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none" />
+            <svg viewBox="0 0 24 24" aria-hidden="true" style={{ color: 'var(--color-primary)', width: 24, height: 24, strokeWidth: 2.4 }}>
+              <polygon points="12,1.6 22.4,12 12,22.4 1.6,12" />
+              <circle cx="12" cy="12" r="2.8" fill="currentColor" stroke="none" />
             </svg>
             NeSyCat
           </a>
