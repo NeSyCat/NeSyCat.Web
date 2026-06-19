@@ -1,6 +1,6 @@
 # NeSyCat.Web
 
-Source for the NeSyCat umbrella site, deployed at **[nesycat.com](https://nesycat.com)**.
+Source for the NeSyCat umbrella site, deployed at **[nesycat.org](https://nesycat.org)**.
 
 NeSyCat ("Neuro-Symbolic Category") applies category-theoretic results — already proven — to
 neuro-symbolic AI, structured as a bridge between categorical-logic syntax/semantics and the
@@ -8,11 +8,11 @@ Haskell type system. The site is a single-page entry point for the three pillars
 
 - **Logic** — the formal core. Paper: *NeSyCat: A Monad-Based Categorical Semantics of the Neurosymbolic ULLER Framework* (Romero Schellhorn & Mossakowski, 2026), [arXiv:2604.24612][paper].
 - **AI** — the Haskell reference implementation, [github.com/NeSyCat][gh].
-- **Semiotics** — the in-browser string-diagram editor, [semiotics.nesycat.com][editor]. Source in the sibling [NeSyCat.Semiotics][semiotics] repo.
+- **Semiotics** — the in-browser string-diagram editor, [semiotics.nesycat.org][editor]. Source in the sibling [NeSyCat.Semiotics][semiotics] repo.
 
 [paper]: https://doi.org/10.48550/arXiv.2604.24612
 [gh]: https://github.com/NeSyCat
-[editor]: https://semiotics.nesycat.com
+[editor]: https://semiotics.nesycat.org
 [semiotics]: https://github.com/NeSyCat/NeSyCat.Semiotics
 
 ## Adding a new paper
@@ -46,5 +46,5 @@ npm run dev    # http://localhost:3000
 
 ## Branch + PR strategy
 
-`staging` is the integration branch. Feature branch → PR into `staging` → promote `staging` →
-`main`. Don't push directly to `main` or `staging`. The Vercel project auto-deploys from `main`.
+`main` is the production branch — Vercel auto-deploys it to nesycat.org. Work on a feature branch
+and open a PR into `main`; every PR gets a Vercel preview. Don't push directly to `main`.

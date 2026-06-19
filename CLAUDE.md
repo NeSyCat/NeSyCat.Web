@@ -2,13 +2,13 @@
 
 ## What this repo is
 
-The marketing/info site for the **NeSyCat** project, deployed at **[nesycat.com](https://nesycat.com)**.
+The marketing/info site for the **NeSyCat** project, deployed at **[nesycat.org](https://nesycat.org)**.
 It is *not* the diagram editor; that lives in the sibling repo `NeSyCat.Semiotics` and is deployed
-at **[semiotics.nesycat.com](https://semiotics.nesycat.com)**. This site links out to:
+at **[semiotics.nesycat.org](https://semiotics.nesycat.org)**. This site links out to:
 
 - **Theory paper**: <https://doi.org/10.48550/arXiv.2604.24612>
 - **HaskTorch** (Haskell implementation): <https://github.com/NeSyCat>
-- **Semiotics** (diagram editor): <https://semiotics.nesycat.com>
+- **Semiotics** (diagram editor): <https://semiotics.nesycat.org>
 
 ## This is NOT the Next.js you know
 
@@ -56,7 +56,7 @@ revising content, quote or lightly paraphrase from these papers rather than fabr
 
 ## Branch + PR strategy
 
-- `main` is the production branch — merging to it deploys to production (nesycat.com) on Vercel.
+- `main` is the production branch — merging to it deploys to production (nesycat.org) on Vercel.
 - Work on feature branches and open a PR into `main`. Every PR/branch gets an automatic Vercel
   preview deploy.
 - Don't push directly to `main`.
@@ -64,6 +64,6 @@ revising content, quote or lightly paraphrase from these papers rather than fabr
 
 ## Deployment
 
-- Production: `https://nesycat.com` (and `https://www.nesycat.com`)
+- Production: `https://nesycat.org` (and `https://www.nesycat.org`)
 - Hosted on Vercel; DNS authoritative there.
 - Local dev: `npm run dev` on the default port 3000.

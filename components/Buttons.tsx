@@ -55,7 +55,7 @@ export function LinkButton({ href, variant = 'secondary', big, external, childre
   )
 }
 
-const EDITOR_HREF = 'https://semiotics.nesycat.com/'
+const EDITOR_HREF = 'https://semiotics.nesycat.org/'
 
 export function OpenEditorButton({ big, variant = 'primary' }: { big?: boolean; variant?: Variant }) {
   return (
