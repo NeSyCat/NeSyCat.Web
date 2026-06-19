@@ -2,7 +2,7 @@ import { GitHubIcon, LinkButton, OpenEditorButton } from '../Buttons'
 
 export default function Hero() {
   return (
-    <section style={{ padding: '92px 48px 36px', textAlign: 'center', maxWidth: 1040, margin: '0 auto' }}>
+    <section id="top" style={{ padding: '72px 48px 36px', textAlign: 'center', maxWidth: 1040, margin: '0 auto' }}>
       <div className="t-eyebrow">NeSy 2026 · Neurosymbolic learning &amp; reasoning</div>
 
       <h1 className="t-display" style={{ margin: '20px 0 0' }}>

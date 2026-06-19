@@ -1,43 +1,49 @@
-import Logo from '../Logo'
-import { OpenEditorButton } from '../Buttons'
+import { GitHubIcon, EditorIcon } from '../Buttons'
 
-const linkStyle: React.CSSProperties = { color: 'inherit', textDecoration: 'none' }
+const EDITOR_HREF = 'https://semiotics.nesycat.com/'
 
+// No top bar — just floating pills in the corners, like the Admination app.
+// The DS `.pill` is a frosted capsule of `.btn` segments; `.is-active` fills
+// a segment solid blue. Left cluster = brand + section links; right = actions.
 export default function Nav() {
   return (
-    <nav
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '16px 40px',
-        borderBottom: '1px solid var(--color-border)',
-        position: 'sticky',
-        top: 0,
-        zIndex: 10,
-        background: 'rgba(250, 250, 249, 0.8)',
-        backdropFilter: 'saturate(180%) blur(8px)',
-        WebkitBackdropFilter: 'saturate(180%) blur(8px)',
-      }}
-    >
-      <Logo />
-      <div
-        style={{
-          display: 'flex',
-          gap: 26,
-          fontSize: 13.5,
-          color: 'var(--color-text-secondary)',
-          fontWeight: 500,
-        }}
-      >
-        <a href="#abstract" style={linkStyle}>Abstract</a>
-        <a href="#monads" style={linkStyle}>Monads</a>
-        <a href="#layers" style={linkStyle}>Layers</a>
-        <a href="#benchmarks" style={linkStyle}>Results</a>
-        <a href="#paper" style={linkStyle}>Paper</a>
-        <a href="https://github.com/NeSyCat" style={linkStyle} target="_blank" rel="noreferrer">GitHub</a>
+    <header className="nav-floating">
+      {/* left — brand pill (active/blue) + a segmented pill of section links */}
+      <div className="pill-cluster">
+        <div className="pill">
+          <a href="#top" className="btn is-active" style={{ fontWeight: 600, letterSpacing: '-0.01em' }}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <polygon points="12,4 20,12 12,20 4,12" />
+              <circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none" />
+            </svg>
+            NeSyCat
+          </a>
+        </div>
+        <div className="pill nav-links">
+          <a className="btn" href="#abstract">Abstract</a>
+          <a className="btn" href="#monads">Monads</a>
+          <a className="btn" href="#layers">Layers</a>
+          <a className="btn" href="#benchmarks">Results</a>
+          <a className="btn" href="#paper">Paper</a>
+        </div>
       </div>
-      <OpenEditorButton />
-    </nav>
+
+      {/* center spacer */}
+      <div />
+
+      {/* right — action pills */}
+      <div className="pill-cluster" style={{ justifySelf: 'end' }}>
+        <div className="pill">
+          <a className="btn" href="https://github.com/NeSyCat" target="_blank" rel="noreferrer">
+            <GitHubIcon size={16} /> GitHub
+          </a>
+        </div>
+        <div className="pill">
+          <a className="btn" href={EDITOR_HREF} target="_blank" rel="noreferrer">
+            <EditorIcon /> Open editor
+          </a>
+        </div>
+      </div>
+    </header>
   )
 }
