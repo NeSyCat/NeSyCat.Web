@@ -1,14 +1,14 @@
 import { GitHubIcon, LinkButton } from '../Buttons'
 import { fetchArxiv, bibtexFor, type ArxivPaper } from '@/lib/arxiv'
-import { PAPERS } from '@/lib/papers'
+import { PAPERS, PAPER_META } from '@/lib/papers'
 
-// § Papers. The headline is NeSyCat Torch (the NeSy 2026 conference paper);
-// it has no public arXiv id yet, so it is rendered from static metadata and
-// links to the code + paper sources on GitHub. The foundational categorical
-// theory paper is still pulled live from arXiv via lib/papers.ts.
+type Meta = { code?: string; featured?: boolean }
+
+// § Papers. Every entry is fetched live from arXiv (lib/papers.ts) — title,
+// authors, abstract, date, all categories and a BibTeX entry. NeSyCat Torch is
+// featured (more elevated + a Code link); the theory paper is the foundation.
 export default async function Paper() {
   const results = await Promise.all(PAPERS.map((id) => fetchArxiv(id)))
-  const papers = results.filter((p): p is ArxivPaper => p !== null)
   const failedIds = PAPERS.filter((_, i) => results[i] === null)
 
   return (
@@ -42,15 +42,14 @@ export default async function Paper() {
           lineHeight: 'var(--lh-body)',
         }}
       >
-        NeSyCat Torch is the neural implementation; the categorical theory paper is the
-        foundation it builds on.
+        NeSyCat Torch is the neural implementation; the categorical theory paper is the foundation
+        it builds on.
       </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-        <TorchCard />
-        {papers.map((p) => (
-          <PaperCard key={p.id} paper={p} />
-        ))}
+        {PAPERS.map((id, i) =>
+          results[i] ? <PaperCard key={id} paper={results[i] as ArxivPaper} meta={PAPER_META[id]} /> : null,
+        )}
         {failedIds.map((id) => (
           <FallbackCard key={id} input={id} />
         ))}
@@ -59,60 +58,13 @@ export default async function Paper() {
   )
 }
 
-// Featured: the NeSyCat Torch conference paper (static metadata from the
-// source .tex — no public arXiv id yet).
-function TorchCard() {
-  return (
-    <article className="surface" style={{ padding: 28, boxShadow: 'var(--shadow-md)' }}>
-      <div className="t-eyebrow" style={{ color: 'var(--color-primary)' }}>
-        Conference paper · NeSy 2026
-      </div>
-      <h3
-        style={{
-          margin: '10px 0 0',
-          fontSize: 'var(--text-h4)',
-          fontWeight: 600,
-          color: 'var(--color-foreground)',
-          letterSpacing: '-0.01em',
-          lineHeight: 1.3,
-        }}
-      >
-        NeSyCat Torch: A Differentiable Tensor Implementation of Categorical Semantics for
-        Neurosymbolic Learning
-      </h3>
-      <div className="t-code" style={{ marginTop: 8, fontSize: 12.5, color: 'var(--color-muted-foreground)' }}>
-        Daniel Romero Schellhorn · Till Mossakowski · Björn Gehrke — University of Osnabrück
-      </div>
-      <p style={{ marginTop: 16, fontSize: 14, color: 'var(--color-text-secondary)', lineHeight: 1.7 }}>
-        Neurosymbolic semantics is fragmented: classical, fuzzy, probabilistic and neural systems
-        each define truth by their own rules. NeSyCat subsumes them under a single inductive
-        definition of truth, parametric in a strong monad and an aggregation structure on
-        truth-values. NeSyCat Torch supplies the missing link — interpreting computational symbols
-        via neural networks — using the distribution monad for reference semantics and a lazy
-        log-tensor monad over the log-semiring for numerically stable, differentiable training. On
-        MNIST addition, the HaskTorch, JAX and PyTorch implementations outperform LTN and
-        DeepProbLog in speed and accuracy, nearing DeepStochLog, while staying in one uniform
-        framework.
-      </p>
-      <div style={{ marginTop: 20, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        <LinkButton href="https://github.com/NeSyCat" variant="primary" external>
-          <GitHubIcon size={16} /> Code &amp; paper sources <span style={{ opacity: 0.7, fontSize: 12 }}>↗</span>
-        </LinkButton>
-      </div>
-    </article>
-  )
-}
-
-function PaperCard({ paper: p }: { paper: ArxivPaper }) {
+function PaperCard({ paper: p, meta }: { paper: ArxivPaper; meta?: Meta }) {
   const bibtex = bibtexFor(p)
   return (
-    <article className="surface" style={{ padding: 28 }}>
-      <div className="t-eyebrow" style={{ color: 'var(--color-muted-foreground)' }}>
-        Foundation · arXiv
-      </div>
+    <article className="surface" style={{ padding: 28, boxShadow: meta?.featured ? 'var(--shadow-md)' : undefined }}>
       <h3
         style={{
-          margin: '10px 0 0',
+          margin: 0,
           fontSize: 'var(--text-h4)',
           fontWeight: 600,
           color: 'var(--color-foreground)',
@@ -125,7 +77,7 @@ function PaperCard({ paper: p }: { paper: ArxivPaper }) {
       <div className="t-code" style={{ marginTop: 8, fontSize: 12.5, color: 'var(--color-muted-foreground)' }}>
         {p.authors.join(' · ')}
         {p.published && <> · {p.published.slice(0, 10)}</>}
-        {p.categories.length > 0 && <> · {p.categories.slice(0, 4).join(' / ')}</>}
+        {p.categories.length > 0 && <> · {p.categories.join(' / ')}</>}
       </div>
       <p style={{ marginTop: 16, fontSize: 14, color: 'var(--color-text-secondary)', lineHeight: 1.7 }}>
         {p.abstract}
@@ -153,6 +105,11 @@ function PaperCard({ paper: p }: { paper: ArxivPaper }) {
         <LinkButton href={p.pdfUrl} variant="secondary" external>
           PDF <span style={{ opacity: 0.7, fontSize: 12 }}>↗</span>
         </LinkButton>
+        {meta?.code && (
+          <LinkButton href={meta.code} variant="secondary" external>
+            <GitHubIcon size={14} /> Code <span style={{ opacity: 0.7, fontSize: 12 }}>↗</span>
+          </LinkButton>
+        )}
       </div>
     </article>
   )
@@ -166,7 +123,7 @@ function FallbackCard({ input }: { input: string }) {
       </div>
       <p style={{ marginTop: 8, fontSize: 13, color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
         <span className="t-code">{input}</span> — the arXiv API may be rate-limiting or the id may
-        not be live yet. The page will retry on the next revalidation tick.
+        not be live yet. The page retries on the next revalidation tick.
       </p>
     </article>
   )

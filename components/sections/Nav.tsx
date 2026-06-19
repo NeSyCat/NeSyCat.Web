@@ -1,43 +1,75 @@
-import Logo from '../Logo'
-import { OpenEditorButton } from '../Buttons'
+'use client'
 
-const linkStyle: React.CSSProperties = { color: 'inherit', textDecoration: 'none' }
+import { useEffect, useState } from 'react'
+import { GitHubIcon } from '../Buttons'
 
+const TABS = [
+  { id: 'abstract', label: 'Abstract' },
+  { id: 'monads', label: 'Monads' },
+  { id: 'layers', label: 'Layers' },
+  { id: 'benchmarks', label: 'Results' },
+  { id: 'paper', label: 'Paper' },
+]
+
+// No top bar — floating pills. The centered section pill is a scroll-spy tab
+// bar: the section currently in view gets `.is-active` (solid blue), the same
+// single-selection styling the Admination app uses for its pills.
 export default function Nav() {
+  const [active, setActive] = useState<string>('')
+
+  useEffect(() => {
+    const sections = TABS.map((t) => document.getElementById(t.id)).filter(
+      (el): el is HTMLElement => el !== null,
+    )
+    if (sections.length === 0) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((e) => e.isIntersecting)
+        if (visible.length === 0) return
+        const top = visible.reduce((a, b) =>
+          a.boundingClientRect.top <= b.boundingClientRect.top ? a : b,
+        )
+        setActive(top.target.id)
+      },
+      { rootMargin: '-45% 0px -50% 0px', threshold: 0 },
+    )
+    sections.forEach((el) => observer.observe(el))
+    return () => observer.disconnect()
+  }, [])
+
   return (
-    <nav
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '16px 40px',
-        borderBottom: '1px solid var(--color-border)',
-        position: 'sticky',
-        top: 0,
-        zIndex: 10,
-        background: 'rgba(250, 250, 249, 0.8)',
-        backdropFilter: 'saturate(180%) blur(8px)',
-        WebkitBackdropFilter: 'saturate(180%) blur(8px)',
-      }}
-    >
-      <Logo />
-      <div
-        style={{
-          display: 'flex',
-          gap: 26,
-          fontSize: 13.5,
-          color: 'var(--color-text-secondary)',
-          fontWeight: 500,
-        }}
-      >
-        <a href="#abstract" style={linkStyle}>Abstract</a>
-        <a href="#monads" style={linkStyle}>Monads</a>
-        <a href="#layers" style={linkStyle}>Layers</a>
-        <a href="#benchmarks" style={linkStyle}>Results</a>
-        <a href="#paper" style={linkStyle}>Paper</a>
-        <a href="https://github.com/NeSyCat" style={linkStyle} target="_blank" rel="noreferrer">GitHub</a>
+    <header className="nav-floating">
+      {/* left — brand */}
+      <div className="pill-cluster" style={{ justifySelf: 'start' }}>
+        <div className="pill">
+          <a href="#top" className="btn" style={{ fontWeight: 600, letterSpacing: '-0.01em' }}>
+            <svg viewBox="0 0 24 24" aria-hidden="true" style={{ color: 'var(--color-primary)', width: 20, height: 20 }}>
+              <polygon points="12,4 20,12 12,20 4,12" />
+              <circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none" />
+            </svg>
+            NeSyCat
+          </a>
+        </div>
       </div>
-      <OpenEditorButton />
-    </nav>
+
+      {/* center — section tabs with scroll-spy selection */}
+      <div className="pill nav-links" style={{ justifySelf: 'center' }}>
+        {TABS.map((t) => (
+          <a key={t.id} className={active === t.id ? 'btn is-active' : 'btn'} href={`#${t.id}`}>
+            {t.label}
+          </a>
+        ))}
+      </div>
+
+      {/* right — GitHub */}
+      <div className="pill-cluster" style={{ justifySelf: 'end' }}>
+        <div className="pill">
+          <a className="btn" href="https://github.com/NeSyCat" target="_blank" rel="noreferrer">
+            <GitHubIcon size={16} /> GitHub
+          </a>
+        </div>
+      </div>
+    </header>
   )
 }

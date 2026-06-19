@@ -57,7 +57,7 @@ export default function Benchmarks() {
         margin: '0 auto',
       }}
     >
-      <div className="t-eyebrow">§ Results</div>
+      <div className="t-eyebrow">§ NeSyCat Torch · Results</div>
       <h2
         style={{
           margin: '12px 0 10px',

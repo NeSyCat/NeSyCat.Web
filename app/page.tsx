@@ -1,7 +1,6 @@
 import Abstract from '@/components/sections/Abstract'
 import Benchmarks from '@/components/sections/Benchmarks'
 import Example from '@/components/sections/Example'
-import Footer from '@/components/sections/Footer'
 import Hero from '@/components/sections/Hero'
 import Layers from '@/components/sections/Layers'
 import Monads from '@/components/sections/Monads'
@@ -25,7 +24,6 @@ export default function Home() {
         <Paper />
         <Repos />
       </main>
-      <Footer />
     </>
   )
 }

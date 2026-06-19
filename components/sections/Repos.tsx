@@ -21,7 +21,7 @@ const BACKENDS: Backend[] = [
     name: 'PyTorch',
     lang: 'Python',
     blurb:
-      'The third backend. Python uses yield in place of Haskell’s ← — the generator syntax is the same monadic composition as do-notation.',
+      'The third backend. In Python, yield takes the role of Haskell’s monadic bind — the same do-notation composition.',
   },
 ]
 
@@ -37,7 +37,7 @@ export default function Repos() {
         textAlign: 'center',
       }}
     >
-      <div className="t-eyebrow">§ Implementations</div>
+      <div className="t-eyebrow">§ NeSyCat Torch · Implementations</div>
       <h2
         style={{
           margin: '12px 0 10px',
@@ -58,8 +58,8 @@ export default function Repos() {
           lineHeight: 'var(--lh-body)',
         }}
       >
-        The same monad-polymorphic specification runs in Haskell and Python — all under the NeSyCat
-        organisation on GitHub.
+        NeSyCat Torch runs the same monad-polymorphic specification in Haskell and Python — all under
+        the NeSyCat organisation on GitHub.
       </p>
 
       <div

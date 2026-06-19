@@ -1,32 +1,26 @@
-type SymbolKind = {
-  name: string
-  tag: string
-  signatures: string
-  note: string
-}
+import { Tex, TexBlock } from '../Tex'
 
-// Function and relation symbols are each partitioned into three kinds.
-// Only the third (Nesy) is neural.
-const KINDS: SymbolKind[] = [
+type Kind = { name: string; tag: string; tex: string; note: string }
+
+// Function and relation symbols are each partitioned into three kinds; only
+// the third (Nesy) is neural. `\bigcirc` is the monad symbol; `\tau` the truth type.
+const KINDS: Kind[] = [
   {
     name: 'Tarski',
     tag: 'deterministic',
-    signatures: `f : S₁,…,Sₙ → T
-R : S₁,…,Sₙ → τ`,
+    tex: '\\begin{aligned} f &: S_1,\\dots,S_n \\to T \\\\[3pt] R &: S_1,\\dots,S_n \\to \\tau \\end{aligned}',
     note: 'A plain (pure) map; its result re-enters the monad through return.',
   },
   {
     name: 'Kleisli',
     tag: 'effectful',
-    signatures: `f : S₁,…,Sₙ → ◯T
-R : S₁,…,Sₙ → ◯τ`,
+    tex: '\\begin{aligned} f &: S_1,\\dots,S_n \\to {\\bigcirc} T \\\\[3pt] R &: S_1,\\dots,S_n \\to {\\bigcirc} \\tau \\end{aligned}',
     note: 'Already monadic; it stands as the final do-expression, without return.',
   },
   {
     name: 'Nesy',
     tag: 'neural',
-    signatures: `f : ◯S₁,…,◯Sₙ → ◯T
-R : ◯S₁,…,◯Sₙ → ◯τ`,
+    tex: '\\begin{aligned} f &: {\\bigcirc} S_1,\\dots,{\\bigcirc} S_n \\to {\\bigcirc} T \\\\[3pt] R &: {\\bigcirc} S_1,\\dots,{\\bigcirc} S_n \\to {\\bigcirc} \\tau \\end{aligned}',
     note: 'Takes monadic carriers as input and produces monadic carriers — realised by neural networks; no binds occur.',
   },
 ]
@@ -59,18 +53,18 @@ export default function Symbols() {
           margin: '0 0 32px',
           fontSize: 15,
           color: 'var(--color-text-secondary)',
-          maxWidth: 640,
+          maxWidth: 660,
           lineHeight: 'var(--lh-body)',
         }}
       >
         Function and relation symbols are each partitioned into three kinds. Only the third is
-        neural. (To stay close to first-order logic, symbols may not take arguments of truth type.)
+        neural. (To stay close to first-order logic, symbols may not take truth-typed arguments.)
       </p>
 
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
           gap: 16,
           marginBottom: 28,
         }}
@@ -78,68 +72,35 @@ export default function Symbols() {
         {KINDS.map((k) => (
           <div key={k.name} className="surface" style={{ padding: 22 }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-              <span
-                style={{
-                  fontSize: 17,
-                  fontWeight: 600,
-                  color: 'var(--color-foreground)',
-                  letterSpacing: '-0.01em',
-                }}
-              >
+              <span style={{ fontSize: 17, fontWeight: 600, color: 'var(--color-foreground)', letterSpacing: '-0.01em' }}>
                 {k.name}
               </span>
               <span className="t-code" style={{ fontSize: 11.5, color: 'var(--color-primary)' }}>
                 {k.tag}
               </span>
             </div>
-
-            <pre
-              className="t-code"
+            <div
               style={{
                 margin: '14px 0 0',
-                padding: 16,
-                fontSize: 12.5,
+                padding: '14px 16px',
                 background: 'var(--color-surface)',
                 border: '1px solid var(--color-border)',
                 borderRadius: 'var(--radius-md)',
                 overflowX: 'auto',
-                color: 'var(--color-foreground)',
-                lineHeight: 1.6,
               }}
             >
-              {k.signatures}
-            </pre>
-
-            <p
-              style={{
-                marginTop: 12,
-                fontSize: 13.5,
-                color: 'var(--color-text-secondary)',
-                lineHeight: 1.6,
-              }}
-            >
+              <TexBlock>{k.tex}</TexBlock>
+            </div>
+            <p style={{ marginTop: 12, fontSize: 13.5, color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
               {k.note}
             </p>
           </div>
         ))}
       </div>
 
-      <p
-        style={{
-          margin: 0,
-          fontSize: 13.5,
-          color: 'var(--color-muted-foreground)',
-          maxWidth: 640,
-          lineHeight: 1.6,
-        }}
-      >
-        In the MNIST-addition example,{' '}
-        <span className="t-code" style={{ color: 'var(--color-primary)' }}>
-          digit : Image → ℳ Digit
-        </span>{' '}
-        is the only monad-dependent symbol;{' '}
-        <span className="t-code">+</span> and <span className="t-code">=</span> are ordinary
-        (Tarski) symbols.
+      <p style={{ margin: 0, fontSize: 13.5, color: 'var(--color-muted-foreground)', maxWidth: 680, lineHeight: 1.7 }}>
+        In the MNIST-addition example, <Tex>{'\\mathsf{digit} : \\mathsf{Image} \\to \\mathcal{M}\\,\\mathsf{Digit}'}</Tex>{' '}
+        is the only monad-dependent symbol; addition and equality are ordinary (Tarski) symbols.
       </p>
     </section>
   )
