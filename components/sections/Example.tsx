@@ -54,11 +54,12 @@ export default async function Example() {
         margin: '0 auto',
       }}
     >
-      <div className="t-eyebrow">§ Running example</div>
+      <div className="t-eyebrow">§ NeSyCat Torch · Running example</div>
       <h2 style={h2}>MNIST addition, by distant supervision.</h2>
       <p style={intro}>
-        Single-digit MNIST addition under <em>distant</em> supervision — only the sum of two
-        handwritten digits is observed, never the digits themselves. The axiom is{' '}
+        NeSyCat Torch&apos;s running example: single-digit MNIST addition under <em>distant</em>{' '}
+        supervision — only the sum of two handwritten digits is observed, never the digits
+        themselves. The axiom is{' '}
         <Tex>{'\\forall\\,(x,y,n){:}S\\;\\bigl(n = \\mathsf{digit}(x) + \\mathsf{digit}(y)\\bigr)'}</Tex>.
       </p>
 

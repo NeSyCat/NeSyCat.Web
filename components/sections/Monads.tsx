@@ -89,8 +89,8 @@ export default function Monads() {
         A monad is a triple <span className="t-code">(m, return, &gt;&gt;=)</span>:{' '}
         <span className="t-code">return</span> embeds a value into a computation;{' '}
         <span className="t-code">&gt;&gt;=</span> (bind) composes computations. The one choice that
-        genuinely varies is the effect — the monad <Tex>{'\\mathcal{M}'}</Tex>. NeSyCat Torch uses
-        three layers, built from four monads.
+        genuinely varies is the effect — the monad <Tex>{'\\mathcal{M}'}</Tex>. NeSyCat is parametric
+        in that choice; NeSyCat Torch instantiates the framework with four monads, in three layers.
       </p>
 
       <div

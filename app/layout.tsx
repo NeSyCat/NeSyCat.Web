@@ -21,10 +21,9 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const title =
-  "NeSyCat Torch — A differentiable tensor implementation of categorical semantics for neurosymbolic learning";
+const title = "NeSyCat — A monad-based categorical framework for neurosymbolic AI";
 const description =
-  "NeSyCat Torch is the neural implementation of NeSyCat: classical, fuzzy, probabilistic and neural semantics under one inductive definition of truth, parametric in a strong monad. A lazy log-tensor monad makes it differentiable; on MNIST addition the HaskTorch, JAX and PyTorch backends match or beat LTN, DeepProbLog and DeepStochLog.";
+  "NeSyCat unifies classical, fuzzy, probabilistic and neural reasoning under one categorical, monad-parametric definition of truth. NeSyCat Torch is its differentiable, neural implementation — matching or beating LTN, DeepProbLog and DeepStochLog on MNIST addition across Haskell, JAX and PyTorch.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://nesycat.org"),
@@ -34,7 +33,7 @@ export const metadata: Metadata = {
     title,
     description,
     url: "https://nesycat.org",
-    siteName: "NeSyCat Torch",
+    siteName: "NeSyCat",
     type: "website",
   },
   twitter: {
