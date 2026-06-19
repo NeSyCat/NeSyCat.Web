@@ -29,6 +29,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://nesycat.org"),
   title,
   description,
+  alternates: { canonical: "/" },
   openGraph: {
     title,
     description,
