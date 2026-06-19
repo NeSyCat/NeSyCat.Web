@@ -125,6 +125,25 @@ section[id] {
   scroll-margin-top: 84px;
 }
 
+/* Shiki code blocks — themed syntax highlighting, restyled to match the site:
+   surface background, hairline border, Geist Mono. (Shiki sets token colors
+   inline; we only override the container.) */
+.code-block .shiki {
+  margin: 0;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  font-family: var(--font-geist-mono), 'SF Mono', Menlo, ui-monospace, monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+  background: var(--color-surface) !important;
+}
+.code-block .shiki code {
+  font-family: inherit;
+  background: transparent;
+}
+
 body {
   background: var(--color-background);
   color: var(--color-text-secondary);

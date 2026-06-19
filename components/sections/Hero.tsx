@@ -1,4 +1,4 @@
-import { GitHubIcon, LinkButton, OpenEditorButton } from '../Buttons'
+import { GitHubIcon, LinkButton } from '../Buttons'
 
 export default function Hero() {
   return (
@@ -37,7 +37,6 @@ export default function Hero() {
         <LinkButton href="https://github.com/NeSyCat" variant="secondary" big external>
           <GitHubIcon size={16} /> GitHub
         </LinkButton>
-        <OpenEditorButton big variant="secondary" />
       </div>
 
       <div className="t-code" style={{ marginTop: 20, fontSize: 13, color: 'var(--color-muted-foreground)' }}>

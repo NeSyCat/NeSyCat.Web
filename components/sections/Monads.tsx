@@ -1,60 +1,57 @@
-type Monad = {
-  symbol: string
-  code: string
-  effect: string
-  blurb: string
-}
+import type { ReactNode } from 'react'
+import { Tex } from '../Tex'
 
-// The four monads from which NeSyCat Torch builds its three layers.
+type Monad = { sym: string; code: string; effect: string; blurb: ReactNode }
+
+// The four monads NeSyCat Torch builds its three layers from.
 const MONADS: Monad[] = [
   {
-    symbol: '𝒟',
+    sym: '\\mathcal{D}',
     code: 'Dist',
     effect: 'finite probability',
-    blurb:
-      'Finitely supported probability distributions; the reference semantics and metric readout.',
+    blurb: 'Finitely supported probability distributions; the reference semantics and metric readout.',
   },
   {
-    symbol: '𝒯',
+    sym: '\\mathcal{T}',
     code: 'Tens',
     effect: 'logit weights',
-    blurb:
-      'Finite-support tensor monad 𝒯 m = ℝᵐ (leaves are weight tensors); bind is the linear pushforward.',
+    blurb: (
+      <>
+        Finite-support tensor monad <Tex>{'\\mathcal{T}\\,m = \\mathbb{R}^m'}</Tex> (leaves are weight
+        tensors); bind is the linear pushforward.
+      </>
+    ),
   },
   {
-    symbol: '𝒯_log',
+    sym: '\\mathcal{T}_{\\log}',
     code: 'LogTens',
     effect: 'stable arithmetic',
-    blurb:
-      'Tens in logarithmic coordinates, over the log-semiring (ℝ, logsumexp, +): numerically stable and differentiable — the monad used in training.',
+    blurb: (
+      <>
+        Tens in logarithmic coordinates, over the log-semiring{' '}
+        <Tex>{'(\\mathbb{R},\\ \\mathrm{logsumexp},\\ +)'}</Tex>: numerically stable and
+        differentiable — the monad used in training.
+      </>
+    ),
   },
   {
-    symbol: 'ℬ',
+    sym: '\\mathcal{B}',
     code: 'Batch',
     effect: 'batching',
-    blurb:
-      'Reader monad on the batch index 𝐵; parallel processing of a mini-batch in training.',
+    blurb: (
+      <>
+        Reader monad on the batch index <Tex>{'\\underline{B}'}</Tex>; parallel processing of a
+        mini-batch in training.
+      </>
+    ),
   },
 ]
 
-type Layer = { name: string; monad: string; note: string }
-
+type Layer = { name: string; tex: string; note: string }
 const LAYERS: Layer[] = [
-  {
-    name: 'Probability layer',
-    monad: '𝒟',
-    note: 'the reference semantics.',
-  },
-  {
-    name: 'Tensor layer',
-    monad: '𝒯 / LogTens',
-    note: 'differentiable; real logits instead of probabilities.',
-  },
-  {
-    name: 'Batching layer',
-    monad: 'ℬ',
-    note: 'parallel training samples; carries no probability and no geometry.',
-  },
+  { name: 'Probability layer', tex: '\\mathcal{D}', note: 'the reference semantics.' },
+  { name: 'Tensor layer', tex: '\\mathcal{T} / \\mathcal{T}_{\\log}', note: 'differentiable; real logits instead of probabilities.' },
+  { name: 'Batching layer', tex: '\\mathcal{B}', note: 'parallel training samples; carries no probability and no geometry.' },
 ]
 
 export default function Monads() {
@@ -85,15 +82,15 @@ export default function Monads() {
           margin: '0 0 24px',
           fontSize: 15,
           color: 'var(--color-text-secondary)',
-          maxWidth: 640,
+          maxWidth: 660,
           lineHeight: 'var(--lh-body)',
         }}
       >
         A monad is a triple <span className="t-code">(m, return, &gt;&gt;=)</span>:{' '}
         <span className="t-code">return</span> embeds a value into a computation;{' '}
         <span className="t-code">&gt;&gt;=</span> (bind) composes computations. The one choice that
-        genuinely varies is the effect — the monad ℳ. NeSyCat Torch uses three layers, built from
-        four monads.
+        genuinely varies is the effect — the monad <Tex>{'\\mathcal{M}'}</Tex>. NeSyCat Torch uses
+        three layers, built from four monads.
       </p>
 
       <div
@@ -107,8 +104,8 @@ export default function Monads() {
         {MONADS.map((m) => (
           <div key={m.code} className="surface" style={{ padding: 22 }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-              <span className="t-code" style={{ fontSize: 26, color: 'var(--color-primary)', lineHeight: 1 }}>
-                {m.symbol}
+              <span style={{ fontSize: 22, color: 'var(--color-primary)', lineHeight: 1 }}>
+                <Tex>{m.sym}</Tex>
               </span>
               <span className="t-code" style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-foreground)' }}>
                 {m.code}
@@ -144,7 +141,9 @@ export default function Monads() {
           <div key={l.name} className="surface" style={{ padding: 22 }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
               <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-foreground)' }}>{l.name}</span>
-              <span className="t-code" style={{ fontSize: 13, color: 'var(--color-primary)' }}>{l.monad}</span>
+              <span style={{ fontSize: 14, color: 'var(--color-primary)' }}>
+                <Tex>{l.tex}</Tex>
+              </span>
             </div>
             <p style={{ marginTop: 10, fontSize: 13.5, color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
               {l.note}
@@ -153,38 +152,19 @@ export default function Monads() {
         ))}
       </div>
 
-      <p
-        style={{
-          margin: '0 0 18px',
-          fontSize: 13.5,
-          color: 'var(--color-text-secondary)',
-          maxWidth: 640,
-          lineHeight: 'var(--lh-body)',
-        }}
-      >
-        The training monad is the composite{' '}
-        <span className="t-code" style={{ color: 'var(--color-primary)' }}>ℬ∘𝒯</span>.
+      <p style={{ margin: '0 0 16px', fontSize: 14, color: 'var(--color-text-secondary)', maxWidth: 720, lineHeight: 'var(--lh-body)' }}>
+        The training monad is the composite <Tex>{'\\mathcal{B} \\circ \\mathcal{T}'}</Tex>.
       </p>
 
-      <pre
-        className="t-code"
-        style={{
-          padding: 16,
-          fontSize: 12.5,
-          background: 'var(--color-surface)',
-          border: '1px solid var(--color-border)',
-          borderRadius: 'var(--radius-md)',
-          overflowX: 'auto',
-          color: 'var(--color-foreground)',
-          lineHeight: 1.6,
-          margin: 0,
-        }}
-      >
-        {`Why log space — score now, normalise once at the boundary:
-  · products of probabilities become sums; marginalisation becomes log-sum-exp (numerically stable)
-  · weights range over all of ℝ instead of being squashed into [0,1]
-  · softmax is shift-invariant, so normalising is deferred to the boundary`}
-      </pre>
+      <div className="surface" style={{ padding: '16px 20px', background: 'var(--color-surface)' }}>
+        <p style={{ margin: 0, fontSize: 13.5, color: 'var(--color-text-secondary)', lineHeight: 1.65 }}>
+          <strong style={{ color: 'var(--color-foreground)' }}>Why log space?</strong> Products of
+          probabilities become sums and marginalisation becomes log-sum-exp (numerically stable);
+          weights range over all of <Tex>{'\\mathbb{R}'}</Tex> instead of being squashed into{' '}
+          <Tex>{'[0,1]'}</Tex>; and because softmax is shift-invariant, normalising is deferred —
+          score now, normalise once at the boundary.
+        </p>
+      </div>
     </section>
   )
 }

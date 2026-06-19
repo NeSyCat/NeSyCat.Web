@@ -8,16 +8,9 @@ export const PAPERS = [
   '2604.24612', // NeSyCat — the categorical theory paper (foundation)
 ] as const
 
-// Per-paper presentation: the section eyebrow, an optional "Code" link, and
-// whether to render it as the featured (more elevated) card.
-export const PAPER_META: Record<
-  string,
-  { eyebrow: string; code?: string; featured?: boolean }
-> = {
-  '2606.19279': {
-    eyebrow: 'Conference paper · NeSy 2026',
-    code: 'https://github.com/NeSyCat',
-    featured: true,
-  },
-  '2604.24612': { eyebrow: 'Foundation · arXiv' },
+// Per-paper presentation: an optional "Code" link and whether to render it as
+// the featured (more elevated) card. No eyebrow label — the cards are clean.
+export const PAPER_META: Record<string, { code?: string; featured?: boolean }> = {
+  '2606.19279': { code: 'https://github.com/NeSyCat', featured: true },
+  '2604.24612': {},
 }

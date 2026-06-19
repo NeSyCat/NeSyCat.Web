@@ -21,7 +21,7 @@ const BACKENDS: Backend[] = [
     name: 'PyTorch',
     lang: 'Python',
     blurb:
-      'The third backend. Python uses yield in place of Haskell’s ← — the generator syntax is the same monadic composition as do-notation.',
+      'The third backend. In Python, yield takes the role of Haskell’s monadic bind — the same do-notation composition.',
   },
 ]
 

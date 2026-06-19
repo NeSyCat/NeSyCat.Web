@@ -1,9 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { GitHubIcon, EditorIcon } from '../Buttons'
-
-const EDITOR_HREF = 'https://semiotics.nesycat.com/'
+import { GitHubIcon } from '../Buttons'
 
 const TABS = [
   { id: 'abstract', label: 'Abstract' },
@@ -29,7 +27,6 @@ export default function Nav() {
       (entries) => {
         const visible = entries.filter((e) => e.isIntersecting)
         if (visible.length === 0) return
-        // the section nearest the top of the active band wins
         const top = visible.reduce((a, b) =>
           a.boundingClientRect.top <= b.boundingClientRect.top ? a : b,
         )
@@ -43,11 +40,11 @@ export default function Nav() {
 
   return (
     <header className="nav-floating">
-      {/* left — brand (neutral pill; blue is reserved for the selected tab) */}
+      {/* left — brand */}
       <div className="pill-cluster" style={{ justifySelf: 'start' }}>
         <div className="pill">
           <a href="#top" className="btn" style={{ fontWeight: 600, letterSpacing: '-0.01em' }}>
-            <svg viewBox="0 0 24 24" aria-hidden="true" style={{ color: 'var(--color-primary)' }}>
+            <svg viewBox="0 0 24 24" aria-hidden="true" style={{ color: 'var(--color-primary)', width: 20, height: 20 }}>
               <polygon points="12,4 20,12 12,20 4,12" />
               <circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none" />
             </svg>
@@ -65,16 +62,11 @@ export default function Nav() {
         ))}
       </div>
 
-      {/* right — actions */}
+      {/* right — GitHub */}
       <div className="pill-cluster" style={{ justifySelf: 'end' }}>
         <div className="pill">
           <a className="btn" href="https://github.com/NeSyCat" target="_blank" rel="noreferrer">
             <GitHubIcon size={16} /> GitHub
-          </a>
-        </div>
-        <div className="pill">
-          <a className="btn" href={EDITOR_HREF} target="_blank" rel="noreferrer">
-            <EditorIcon /> Open editor
           </a>
         </div>
       </div>

@@ -2,11 +2,11 @@ import { GitHubIcon, LinkButton } from '../Buttons'
 import { fetchArxiv, bibtexFor, type ArxivPaper } from '@/lib/arxiv'
 import { PAPERS, PAPER_META } from '@/lib/papers'
 
-type Meta = { eyebrow: string; code?: string; featured?: boolean }
+type Meta = { code?: string; featured?: boolean }
 
 // § Papers. Every entry is fetched live from arXiv (lib/papers.ts) — title,
-// authors, abstract, date, categories and a BibTeX entry are pulled at build /
-// revalidation. NeSyCat Torch is featured; the theory paper is the foundation.
+// authors, abstract, date, all categories and a BibTeX entry. NeSyCat Torch is
+// featured (more elevated + a Code link); the theory paper is the foundation.
 export default async function Paper() {
   const results = await Promise.all(PAPERS.map((id) => fetchArxiv(id)))
   const failedIds = PAPERS.filter((_, i) => results[i] === null)
@@ -51,7 +51,7 @@ export default async function Paper() {
           results[i] ? <PaperCard key={id} paper={results[i] as ArxivPaper} meta={PAPER_META[id]} /> : null,
         )}
         {failedIds.map((id) => (
-          <FallbackCard key={id} input={id} meta={PAPER_META[id]} />
+          <FallbackCard key={id} input={id} />
         ))}
       </div>
     </section>
@@ -62,15 +62,9 @@ function PaperCard({ paper: p, meta }: { paper: ArxivPaper; meta?: Meta }) {
   const bibtex = bibtexFor(p)
   return (
     <article className="surface" style={{ padding: 28, boxShadow: meta?.featured ? 'var(--shadow-md)' : undefined }}>
-      <div
-        className="t-eyebrow"
-        style={{ color: meta?.featured ? 'var(--color-primary)' : 'var(--color-muted-foreground)' }}
-      >
-        {meta?.eyebrow ?? 'arXiv'}
-      </div>
       <h3
         style={{
-          margin: '10px 0 0',
+          margin: 0,
           fontSize: 'var(--text-h4)',
           fontWeight: 600,
           color: 'var(--color-foreground)',
@@ -83,7 +77,7 @@ function PaperCard({ paper: p, meta }: { paper: ArxivPaper; meta?: Meta }) {
       <div className="t-code" style={{ marginTop: 8, fontSize: 12.5, color: 'var(--color-muted-foreground)' }}>
         {p.authors.join(' · ')}
         {p.published && <> · {p.published.slice(0, 10)}</>}
-        {p.categories.length > 0 && <> · {p.categories.slice(0, 4).join(' / ')}</>}
+        {p.categories.length > 0 && <> · {p.categories.join(' / ')}</>}
       </div>
       <p style={{ marginTop: 16, fontSize: 14, color: 'var(--color-text-secondary)', lineHeight: 1.7 }}>
         {p.abstract}
@@ -121,11 +115,11 @@ function PaperCard({ paper: p, meta }: { paper: ArxivPaper; meta?: Meta }) {
   )
 }
 
-function FallbackCard({ input, meta }: { input: string; meta?: Meta }) {
+function FallbackCard({ input }: { input: string }) {
   return (
     <article className="surface" style={{ padding: 24 }}>
       <div className="t-eyebrow" style={{ color: 'var(--color-muted-foreground)' }}>
-        {meta?.eyebrow ?? 'arXiv'} — couldn&apos;t fetch
+        Couldn&apos;t fetch from arXiv
       </div>
       <p style={{ marginTop: 8, fontSize: 13, color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
         <span className="t-code">{input}</span> — the arXiv API may be rate-limiting or the id may
