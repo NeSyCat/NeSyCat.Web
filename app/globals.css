@@ -94,7 +94,7 @@
   top: 0;
   z-index: 20;
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: 1fr auto 1fr; /* equal sides → center pill is page-centered */
   align-items: center;
   gap: 16px;
   padding: 14px 20px;
@@ -115,6 +115,14 @@
   .nav-links {
     display: none;
   }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+/* offset anchor jumps so section headings clear the floating nav */
+section[id] {
+  scroll-margin-top: 84px;
 }
 
 body {
