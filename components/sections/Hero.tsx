@@ -3,8 +3,6 @@ import { GitHubIcon, LinkButton } from '../Buttons'
 export default function Hero() {
   return (
     <section id="top" style={{ padding: '72px 48px 36px', textAlign: 'center', maxWidth: 1040, margin: '0 auto' }}>
-      <div className="t-eyebrow">Neurosymbolic AI · Categorical semantics</div>
-
       <h1 className="t-display" style={{ margin: '20px 0 0' }}>
         NeSyCat
       </h1>
@@ -39,10 +37,6 @@ export default function Hero() {
         <LinkButton href="https://github.com/NeSyCat" variant="secondary" big external>
           <GitHubIcon size={16} /> GitHub
         </LinkButton>
-      </div>
-
-      <div className="t-code" style={{ marginTop: 20, fontSize: 13, color: 'var(--color-muted-foreground)' }}>
-        classical · fuzzy · probabilistic · neural
       </div>
     </section>
   )
