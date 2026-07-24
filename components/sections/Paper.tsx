@@ -60,8 +60,25 @@ export default async function Paper() {
 
 function PaperCard({ paper: p, meta }: { paper: ArxivPaper; meta?: Meta }) {
   const bibtex = bibtexFor(p)
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ScholarlyArticle',
+    headline: p.title,
+    author: p.authors.map((name) => ({ '@type': 'Person', name })),
+    datePublished: p.published,
+    abstract: p.abstract,
+    url: p.arxivUrl,
+    sameAs: [p.arxivUrl, p.doiUrl],
+    ...(p.primaryCategory && { about: p.primaryCategory }),
+  }
   return (
     <article className="surface" style={{ padding: 28, boxShadow: meta?.featured ? 'var(--shadow-md)' : undefined }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
+        }}
+      />
       <h3
         style={{
           margin: 0,
