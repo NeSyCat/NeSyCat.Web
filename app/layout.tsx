@@ -22,13 +22,19 @@ const geistMono = Geist_Mono({
 });
 
 const title = "NeSyCat — A monad-based categorical framework for neurosymbolic AI";
+// Full description: used for Open Graph/Twitter/JSON-LD, where there's no
+// truncation penalty and the extra benchmark detail is worth keeping.
 const description =
   "NeSyCat unifies classical, fuzzy, probabilistic and neural reasoning under one categorical, monad-parametric definition of truth. NeSyCat Torch is its differentiable, neural implementation — matching or beating LTN, DeepProbLog and DeepStochLog on MNIST addition across Haskell, JAX and PyTorch.";
+// Short description: used for <meta name="description">, which Google
+// truncates in the search snippet at roughly 155-160 characters.
+const shortDescription =
+  "A monad-based categorical framework unifying classical, fuzzy, probabilistic and neural reasoning — differentiable via NeSyCat Torch.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://nesycat.org"),
   title,
-  description,
+  description: shortDescription,
   alternates: { canonical: "/" },
   openGraph: {
     title,
