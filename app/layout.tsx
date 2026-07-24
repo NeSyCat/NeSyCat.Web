@@ -44,6 +44,14 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "NeSyCat",
+  url: "https://nesycat.org",
+  description,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -55,6 +63,12 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+          }}
+        />
         {children}
         <Analytics />
         <SpeedInsights />
