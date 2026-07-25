@@ -122,7 +122,7 @@ html {
 }
 /* offset anchor jumps so section headings clear the floating nav */
 section[id] {
-  scroll-margin-top: 84px;
+  scroll-margin-top: 72px;
 }
 
 /* Shiki code blocks — themed syntax highlighting, restyled to match the site:
