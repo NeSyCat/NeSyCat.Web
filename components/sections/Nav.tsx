@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { GitHubIcon } from '../Buttons'
+import { EditorIcon } from '../Buttons'
 
 const TABS = [
   { id: 'abstract', label: 'Abstract' },
@@ -62,11 +62,11 @@ export default function Nav() {
         ))}
       </div>
 
-      {/* right — GitHub */}
+      {/* right — Semiotics editor */}
       <div className="pill-cluster" style={{ justifySelf: 'end' }}>
         <div className="pill">
-          <a className="btn" href="https://github.com/NeSyCat" target="_blank" rel="noreferrer">
-            <GitHubIcon size={16} /> GitHub
+          <a className="btn" href="https://semiotics.nesycat.org/" target="_blank" rel="noreferrer">
+            <EditorIcon /> Editor
           </a>
         </div>
       </div>
