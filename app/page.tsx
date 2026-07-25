@@ -1,5 +1,6 @@
 import Abstract from '@/components/sections/Abstract'
 import Benchmarks from '@/components/sections/Benchmarks'
+import Editor from '@/components/sections/Editor'
 import Example from '@/components/sections/Example'
 import Hero from '@/components/sections/Hero'
 import Layers from '@/components/sections/Layers'
@@ -22,6 +23,7 @@ export default function Home() {
         <Example />
         <Benchmarks />
         <Paper />
+        <Editor />
         <Repos />
       </main>
     </>
