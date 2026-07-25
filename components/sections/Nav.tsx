@@ -2,23 +2,27 @@
 
 import { useEffect, useState } from 'react'
 import { EditorIcon } from '../Buttons'
+import { SECTIONS } from './registry'
 
-const TABS = [
-  { id: 'abstract', label: 'Abstract' },
-  { id: 'monads', label: 'Monads' },
-  { id: 'layers', label: 'Layers' },
-  { id: 'benchmarks', label: 'Results' },
-  { id: 'paper', label: 'Paper' },
-]
+const TABS = SECTIONS.filter(
+  (s): s is typeof s & { navLabel: string } => Boolean(s.navLabel),
+)
 
 // No top bar — floating pills. The centered section pill is a scroll-spy tab
 // bar: the section currently in view gets `.is-active` (solid blue), the same
 // single-selection styling the Admination app uses for its pills.
+//
+// Every section in SECTIONS is observed, not just the ones with a pill — so
+// scrolling through an unlabelled section (Hero, Symbols, Example, Repos)
+// still resolves to the nearest *preceding* labelled tab instead of freezing
+// on whatever was last active. That freeze is what happened when the Editor
+// section was added without a matching tab: nothing was left observing it,
+// so the observer's `visible` set went empty and `active` never updated.
 export default function Nav() {
   const [active, setActive] = useState<string>('')
 
   useEffect(() => {
-    const sections = TABS.map((t) => document.getElementById(t.id)).filter(
+    const sections = SECTIONS.map((s) => document.getElementById(s.id)).filter(
       (el): el is HTMLElement => el !== null,
     )
     if (sections.length === 0) return
@@ -30,7 +34,13 @@ export default function Nav() {
         const top = visible.reduce((a, b) =>
           a.boundingClientRect.top <= b.boundingClientRect.top ? a : b,
         )
-        setActive(top.target.id)
+        const index = SECTIONS.findIndex((s) => s.id === top.target.id)
+        for (let i = index; i >= 0; i--) {
+          if (SECTIONS[i].navLabel) {
+            setActive(SECTIONS[i].id)
+            break
+          }
+        }
       },
       { rootMargin: '-45% 0px -50% 0px', threshold: 0 },
     )
@@ -57,7 +67,7 @@ export default function Nav() {
       <div className="pill nav-links" style={{ justifySelf: 'center' }}>
         {TABS.map((t) => (
           <a key={t.id} className={active === t.id ? 'btn is-active' : 'btn'} href={`#${t.id}`}>
-            {t.label}
+            {t.navLabel}
           </a>
         ))}
       </div>
