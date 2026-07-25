@@ -56,6 +56,18 @@ const jsonLd = {
   name: "NeSyCat",
   url: "https://nesycat.org",
   description,
+  // Ties this domain, the GitHub org, and the Semiotics editor together as
+  // the same project — helps Google's entity resolution connect them.
+  sameAs: ["https://github.com/NeSyCat", "https://semiotics.nesycat.org"],
+  publisher: {
+    "@type": "Organization",
+    name: "NeSyCat",
+    url: "https://nesycat.org",
+    logo: {
+      "@type": "ImageObject",
+      url: "https://nesycat.org/opengraph-image",
+    },
+  },
 };
 
 export default function RootLayout({
