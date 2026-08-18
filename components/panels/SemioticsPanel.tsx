@@ -8,10 +8,9 @@ const h2: React.CSSProperties = {
   letterSpacing: '-0.015em',
 }
 const intro: React.CSSProperties = {
-  margin: '0 0 32px',
+  margin: '0 0 24px',
   fontSize: 15,
   color: 'var(--color-text-secondary)',
-  maxWidth: 680,
   lineHeight: 'var(--lh-body)',
 }
 
@@ -19,18 +18,13 @@ const intro: React.CSSProperties = {
 // repo NeSyCat.Semiotics) — embedded live here as a preview. GitHub's own
 // login page refuses to be framed (X-Frame-Options: deny), so sign-in can't
 // complete inside the iframe; OpenEditorButton is the reliable full-tab path.
-export default function Editor() {
+// `loading="lazy"` means the iframe network request only fires once this
+// panel is first shown — this component stays mounted afterwards (Explorer
+// toggles panels with `hidden`), so it never reloads on tab switches.
+export default function SemioticsPanel() {
   return (
-    <section
-      id="editor"
-      style={{
-        padding: '48px 48px 64px',
-        borderTop: '1px solid var(--color-border)',
-        maxWidth: 1120,
-        margin: '0 auto',
-      }}
-    >
-      <div className="t-eyebrow">§ Semiotics</div>
+    <section>
+      <div className="t-eyebrow">§ Semiotics · String-diagram editor</div>
       <h2 style={h2}>Sketch it, don&apos;t just read it.</h2>
       <p style={intro}>
         Semiotics is NeSyCat&apos;s web editor for category-theoretic string diagrams — compose
@@ -46,13 +40,13 @@ export default function Editor() {
           style={{
             display: 'block',
             width: '100%',
-            height: 640,
+            height: 480,
             border: '1px solid var(--color-border)',
             borderRadius: 'var(--radius-md)',
           }}
         />
       </div>
-      <p style={{ margin: '10px 2px 0', fontSize: 12.5, color: 'var(--color-muted-foreground)', lineHeight: 1.6 }}>
+      <p style={{ margin: '10px 2px 0', fontSize: 15, color: 'var(--color-muted-foreground)', lineHeight: 1.6 }}>
         GitHub sign-in can&apos;t complete inside the embed above — open the editor in its own tab
         to sign in and save.
       </p>

@@ -20,14 +20,6 @@
    via var(--…) and never redefine them. Kept unlayered (like the DS)
    so .btn--lg can extend the DS's unlayered .btn.
    ──────────────────────────────────────────────────────────────────── */
-.t-display {
-  font-family: var(--font-display);
-  font-size: clamp(2.5rem, 6vw, 4rem); /* 40 → 64px */
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1.04;
-  color: var(--color-foreground);
-}
 .t-eyebrow {
   font-family: var(--font-caption);
   font-size: var(--text-caption);
@@ -36,14 +28,74 @@
   text-transform: uppercase;
   color: var(--color-primary);
 }
-.t-lead {
-  font-family: var(--font-body);
-  font-size: 1.125rem;
-  line-height: var(--lh-body);
-  color: var(--color-text-secondary);
+
+/* ── P2: per-area accent ──────────────────────────────────────────────
+   Each Explorer panel carries its own area's colour instead of the single
+   DS blue — --area-accent is set inline per panel wrapper in Explorer.tsx
+   (data-accent="<id>" alongside it), so every panel has its accent whether
+   or not it's the one currently visible. This only recolours the eyebrow
+   and the primary CTA button — body text, headings and hairlines are
+   untouched (an accent, not a re-theme).
+
+   Specificity note: the hover/active rule below stacks FOUR class-level
+   selectors (.explorer-panel, [data-accent], .btn, .btn--primary, :hover —
+   .btn.btn--primary:hover in the DS is 3) so it wins over the DS's own
+   .btn.btn--primary:hover regardless of the two stylesheets' load order,
+   without needing !important. */
+.explorer-panel [data-accent] .t-eyebrow {
+  color: var(--area-accent, var(--color-primary));
 }
-.t-num {
-  font-feature-settings: 'tnum';
+.explorer-panel [data-accent] .btn.btn--primary {
+  background: var(--area-accent, var(--color-primary));
+  border-color: var(--area-accent, var(--color-primary));
+}
+.explorer-panel [data-accent] .btn.btn--primary:hover,
+.explorer-panel [data-accent] .btn.btn--primary.is-hover,
+.explorer-panel [data-accent] .btn.btn--primary.is-active {
+  background: color-mix(in srgb, var(--area-accent, var(--color-primary)) 85%, black);
+  border-color: color-mix(in srgb, var(--area-accent, var(--color-primary)) 85%, black);
+}
+
+/* Overview's accent is the mark's own colour wheel, not a flat colour — a
+   gradient sweep through the same eight stops the diamond mark itself
+   uses (see the --logo-* block below), applied as clipped gradient text.
+   Real solid `color` first, unconditionally, as the actual fallback value
+   — the gradient/clip declarations only land inside @supports, so a
+   browser without background-clip:text support keeps the solid colour
+   rather than rendering invisible (transparent-on-transparent) text.
+   Stops are darkened toward the foreground with color-mix — the wheel's
+   lightest hues (cyan, amber) otherwise wash out at 12px on the near-white
+   page; the darkening amount per stop was tuned against a real capture. */
+.explorer-panel [data-accent="overview"] .t-eyebrow {
+  color: var(--color-primary);
+}
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .explorer-panel [data-accent="overview"] .t-eyebrow {
+    /* .t-eyebrow is a block <div> that (like every other panel's) spans the
+       full content column width, while "§ NESYCAT" itself is only ~90px
+       wide — a background-image sized to the FULL block would only ever
+       reveal its first stops (blue → cyan → green) through the short
+       clipped text, never reaching red/magenta/violet. Shrink-wrapping to
+       the text's own width (inline-block) makes the gradient span exactly
+       the glyphs it's clipped to, so the whole wheel actually sweeps
+       across the word. */
+    display: inline-block;
+    background-image: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--logo-blue) 85%, var(--color-foreground)),
+      color-mix(in srgb, var(--logo-cyan) 58%, var(--color-foreground)),
+      color-mix(in srgb, var(--logo-green) 85%, var(--color-foreground)),
+      color-mix(in srgb, var(--logo-amber) 52%, var(--color-foreground)),
+      color-mix(in srgb, var(--logo-red) 85%, var(--color-foreground)),
+      color-mix(in srgb, var(--logo-pink) 78%, var(--color-foreground)),
+      color-mix(in srgb, var(--logo-magenta) 82%, var(--color-foreground)),
+      color-mix(in srgb, var(--logo-violet) 80%, var(--color-foreground))
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
 }
 
 /* Large CTA — extends the DS pill .btn for hero-scale actions. */
@@ -72,71 +124,32 @@
   font-feature-settings: 'tnum';
 }
 
-/* Responsive two-column split (label | body). Inline styles can't express
-   media queries, so it lives here: single column on narrow screens, a
-   1fr / 1.4fr split once there's room. */
-.split-2 {
-  display: grid;
-  gap: 56px;
-  align-items: start;
-}
-@media (min-width: 760px) {
-  .split-2 {
-    grid-template-columns: 1fr 1.4fr;
-  }
-}
-
-/* Floating pill navigation — no solid bar (mirrors the Admination app):
-   the header is transparent and the pills carry their own frosted glass; a
-   faint top fade keeps them legible as content scrolls under it. */
-.nav-floating {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr; /* equal sides → center pill is page-centered */
-  align-items: center;
-  gap: 16px;
-  padding: 14px 20px;
-}
-.nav-floating::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: rgba(250, 250, 249, 0.55);
-  backdrop-filter: saturate(160%) blur(6px);
-  -webkit-backdrop-filter: saturate(160%) blur(6px);
-  -webkit-mask-image: linear-gradient(to bottom, #000 35%, rgba(0, 0, 0, 0.4) 70%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 35%, rgba(0, 0, 0, 0.4) 70%, transparent 100%);
-  pointer-events: none;
-}
-@media (max-width: 820px) {
-  .nav-links {
-    display: none;
-  }
-}
-
 html {
   scroll-behavior: smooth;
 }
-/* offset anchor jumps so section headings clear the floating nav */
-section[id] {
-  scroll-margin-top: 72px;
-}
 
-/* Shiki code blocks — themed syntax highlighting, restyled to match the site:
-   surface background, hairline border, Geist Mono. (Shiki sets token colors
-   inline; we only override the container.) */
+/* Rev 9: Shiki code blocks (the Mathematics panel's real Lean excerpt) —
+   themed syntax highlighting restyled to match the site: surface
+   background, hairline border, Geist Mono, and its own horizontal scroll
+   so a long code line never widens the panel (the F1 lesson). Shiki sets
+   token colors inline; this only overrides the container.
+   P1 (policy reversal): readability now wins over fitting a panel to one
+   screen without scrolling — .explorer-panel already scrolls
+   (overflow-y: auto), so a code-bearing panel is allowed to run past the
+   fold. Raised from the original 11.5px/1.38/11px 12px to a comfortably
+   readable size; a previous revision of this rule shrank it further and
+   added a denser `.tt-code` override for Type theory's longer excerpt —
+   both reverted, since panel width (the wider 1.2fr column + trimmed
+   .explorer-panel padding, above) is now the lever instead of font size. */
 .code-block .shiki {
   margin: 0;
-  padding: 16px;
+  padding: 14px 16px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   overflow-x: auto;
   font-family: var(--font-geist-mono), 'SF Mono', Menlo, ui-monospace, monospace;
-  font-size: 12.5px;
-  line-height: 1.6;
+  font-size: 13px;
+  line-height: 1.55;
   background: var(--color-surface) !important;
 }
 .code-block .shiki code {
@@ -150,4 +163,599 @@ body {
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
+}
+
+/* ── Brand-mark colour field ───────────────────────────────────────────
+   The diamond mark is the one piece of UI that deliberately carries its
+   own multi-colour palette instead of a single DS semantic colour — this
+   has no equivalent in the DS's single-primary model, so these are
+   scoped `--logo-*` and consumed ONLY by the diamond mark (masked SVG
+   colour blobs + its corner rings/labels). Never reach for these outside
+   the mark.
+
+   The outline is built the way Google's Gemini icon builds its colour
+   field: an SVG mask holds the diamond's silhouette, and large, heavily
+   blurred solid-colour circles sit behind it — only the sliver inside the
+   mask shows. Adjacent blobs overlap and blend purely through blur
+   falloff, so nothing is ever drawn as a seam or a stop; see
+   components/Explorer.tsx for the mask/filter/blob markup. Unlike a flat
+   four-colour version, the wheel is still here — it's just painted as
+   blobs instead of drawn as gradient stops: four blobs sit at the corners
+   (the four anchors below) and four more sit at the edge midpoints (the
+   four intermediate hues below), the same eight colours the old gradient
+   stroke's stops used. The corner anchors are also what the corner rings
+   and selected-label text key off directly. --logo-blue's value equals
+   --color-primary (#3478F6) so the mark stays on-brand; it's restated as
+   its own literal here (rather than `var(--color-primary)`) so it
+   resolves the same way the other seven literals do. ──────────────────── */
+:root {
+  /* Corner anchors */
+  --logo-blue: #3478f6; /* left   — Mathematics */
+  --logo-green: #34a853; /* top    — Linguistics */
+  --logo-red: #ea4335; /* right  — Semiotics */
+  --logo-magenta: #d634f0; /* bottom — Informatics */
+
+  /* Edge-midpoint intermediates — true colour-wheel hues (walked through
+     hue space between their two neighbours), not RGB averages, which
+     would instead pass through a muddy grey/brown. Consumed only by the
+     midpoint blobs in Explorer.tsx, to keep the middle of each edge
+     saturated rather than fading to the corner blobs' blur tails. */
+  --logo-cyan: #27dcd4; /* upper-left  edge — blue → green */
+  --logo-amber: #b6d42a; /* upper-right edge — green → red */
+  --logo-pink: #ed3596; /* lower-right edge — red → magenta */
+  --logo-violet: #6534f3; /* lower-left  edge — magenta → blue */
+
+  /* Centre dot fill — deliberately a literal white rather than
+     var(--color-card): the brief asks for the dot to read as
+     unmistakably white against the off-white page, and --color-card
+     flips to dark navy under .dark, which would defeat that. */
+  --logo-dot-fill: #ffffff;
+}
+
+/* ── Explorer — the single-screen diamond figure + switching panel ────
+   Desktop: a fixed-height (100dvh) two-column grid, no body scroll — the
+   right panel scrolls internally. Narrow: stacks to a single, normally
+   scrolling column (diamond on top, panel below).
+   ──────────────────────────────────────────────────────────────────── */
+.explorer {
+  display: grid;
+  /* P1: widened from 1.1fr → 1.2fr so code-bearing panels (Mathematics,
+     Type theory) have more room at a comfortably readable code font size —
+     see --diamond-size below, whose divisor is coupled to this split. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  grid-template-rows: minmax(0, 1fr);
+  height: 100dvh;
+  overflow: hidden;
+}
+.explorer-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 48px;
+  min-height: 0;
+}
+.explorer-panel {
+  min-height: 0;
+  overflow-y: auto;
+  /* P1: horizontal padding trimmed 56px → 44px to give code blocks more
+     usable width at a readable font size, alongside the wider 1.2fr column
+     above. */
+  padding: 40px 44px;
+  border-left: 1px solid var(--color-border);
+  transition: opacity 400ms ease-out, transform 400ms ease-out;
+}
+@media (max-width: 1023.98px) {
+  .explorer {
+    /* F1: a plain 1fr has min-width:auto, so an oversized descendant (the
+       BibTeX <pre white-space:pre> in the hidden Logic panel) inflates the
+       column's min-content past the viewport width. minmax(0, 1fr) caps it. */
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    height: auto;
+    overflow: visible;
+  }
+  .explorer-stage {
+    padding: 40px 24px 24px;
+  }
+  .explorer-panel {
+    overflow-y: visible;
+    border-left: none;
+    border-top: 1px solid var(--color-border);
+    padding: 32px 24px 64px;
+  }
+}
+
+/* G1: the brand name — first child of .explorer-stage, above the diamond.
+   Display-scale; the tagline subtext was removed (the user-facing copy now
+   lives only in the Overview panel), the h1 stays for SEO/a11y. */
+.explorer-brand {
+  transition: opacity 300ms ease-out;
+}
+/* N1: "Neuro Symbolic Categories" is ~3x "NeSyCat"'s length, so the old
+   clamp(32px, 3.2vw, 48px) — sized for a 7-character wordmark — overflowed
+   the stage at every desktop width. Re-tuned so it still reads as a
+   display-scale title (kept to ONE line — no wrap — at every breakpoint,
+   verified against real measured widths) while staying inside the stage
+   at 1440×900 and 1024×768 (the tightest desktop case) and clear of the
+   "Linguistics" label above the figure. */
+.explorer-brand h1 {
+  margin: 0;
+  /* T1: centres the nested <button> below — text-align on a BLOCK container
+     centres an inline-level (inline-block) child within it; it was on the
+     button itself in the S2 pass, which only centres a button's own text
+     WITHIN its box (a no-op here, since the button is shrink-wrapped to
+     that text) and left the button — the whole title — pinned to the
+     stage's left edge instead of centred over the diamond. */
+  text-align: center;
+}
+/* S2: the clickable surface is a real <button> nested in the <h1> (see
+   Explorer.tsx) — reset to plain text styling (button default UA styles
+   would otherwise add a border/background/padding) and given the same
+   typographic treatment the old h1 carried directly. display:inline-block
+   is the button's UA default already, so it shrink-wraps to the text. */
+.brand-button {
+  display: inline-block;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+  font-size: clamp(24px, 2.9vw, 44px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  /* T2: rest colour, while some OTHER area is the active panel — greyed
+     out, the same "idle" treatment the Logic/Type theory labels already
+     use (.hotspot-label below inherits this from --color-text-secondary
+     too), not the mark's own foreground. */
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: color 160ms ease-out;
+}
+.brand-button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 6px;
+  border-radius: 6px;
+}
+/* T2: hover AND "selected" (Overview is the active panel — exactly the
+   state clicking this button produces) both go solid var(--color-
+   foreground) — bold black, not a colour of its own — mirroring the exact
+   two-tone treatment the corner/Logic/Type-theory labels use (idle:
+   text-secondary, hover/selected: foreground; see .hotspot-label below).
+   Weight stays 700 throughout, so the only change is grey → black; hover
+   and selected therefore look identical here, which is what was asked
+   for — the pointer cursor and the panel content are what tell them
+   apart. A rainbow/gradient version of this was tried and reverted per
+   later feedback; the Overview panel's own EYEBROW keeps its gradient
+   (below), this title does not. */
+.brand-button:hover,
+.brand-button[data-selected="true"] {
+  color: var(--color-foreground);
+}
+/* I1/I2: on desktop the brand is pulled OUT of the flex flow entirely (top-
+   anchored, absolutely positioned) so .diamond-wrap is the flex column's
+   only item — its natural center then equals the viewport's vertical
+   center exactly, making the intro glide purely horizontal (zero dy). The
+   stacked (<1024px) layout keeps the brand in-flow, above the wrap. */
+@media (min-width: 1024px) {
+  .explorer-brand {
+    position: absolute;
+    /* N1b: tuned (from the original 44px) so the h1's CAP TOP lands on the
+       same row as the right panel's <h2> first-line CAP TOP — measured
+       pixel-for-pixel (topmost ink row of a non-descender glyph in each:
+       the "N" of "Neuro" vs. the "A" of the panel heading's first line).
+       Because the two headings are different font sizes, their BASELINES
+       do not line up as a result — only the tops do, which is what was
+       asked for. See the commit/ticket that added this for the measured
+       rows at 1440×900. */
+    top: 72px;
+    left: 0;
+    right: 0;
+  }
+}
+
+/* ── Intro load sequence ───────────────────────────────────────────────
+   Explorer starts data-phase="intro" (matches the server render, so no
+   hydration mismatch). Explorer.tsx measures + transforms .diamond-wrap
+   to viewport-center pre-paint, holds ('center'), then transitions the
+   transform back to none ('settling'); labels/brand/panel stay hidden
+   until 'done'. See components/Explorer.tsx for the timing.
+   ──────────────────────────────────────────────────────────────────── */
+.diamond-wrap {
+  padding: 56px;
+  /* M2: the figure's width, expressed once — reused below by the
+     stacked intro-transform's Y-offset calc so it never duplicates this
+     formula. Re-derived from real CDP measurements (not the earlier
+     comment's guess), since the old "350" constant left "Mathematics"
+     (the longer of the two side labels, 109.98px wide at 18px font) with
+     40+px of slack at the 1024px-wide breakpoint — starving the figure
+     far more than needed and, incidentally, leaving no headroom for the
+     "Logic" label above the centre halo (see the hotspot--logic rule
+     below). The model: the Mathematics label's left edge sits at
+     stageCenter − 0.43×figureWidth − 34px − labelWidth (34 = half the
+     44px hotspot button + its 12px margin; 0.43 = 0.5 − the left
+     vertex's 7% inset; stageCenter ≈ 100vw/4.4, the half-column's own
+     centre). Solving for the largest figureWidth that still leaves a
+     12–16px margin to the stage's true edge at the narrowest desktop
+     width (1024px) gives this constant; verified against real captures
+     at 1024×768 and 1440×900. P1: the divisor is coupled to the
+     .explorer grid split above — 2.2 here because the left column is
+     1 / (1 + 1.2) = 1/2.2 of the viewport now (was 1/2.1 at 1fr:1.1fr);
+     changing one without the other sizes the diamond against a column
+     that no longer exists. */
+  --diamond-size: min(52vh, calc(100vw / 2.2 - 290px));
+}
+/* F2/H1: approximate, CSS-only centering for the server-rendered ("intro")
+   paint — the one the browser shows before hydration's layout effect can
+   run. JS overwrites this with the exact measured transform (transition:
+   none) before the next paint once mounted, then drives phases center →
+   settling → done; scoping to [data-phase="intro"] means it never applies
+   once JS has taken over (and never applies at all on the reduced-motion
+   path, which jumps straight to 'done'). I1: on desktop the brand is out
+   of flow (see .explorer-brand above), so .diamond-wrap is vertically
+   centered on its own — the glide is purely horizontal, Y offset is 0. */
+.explorer[data-phase="intro"] .diamond-wrap {
+  transform: translate(calc(50vw - 100vw / 4.2), 0);
+}
+.explorer:not([data-phase="done"]) .explorer-brand {
+  opacity: 0;
+}
+.explorer:not([data-phase="done"]) .explorer-panel {
+  opacity: 0;
+  transform: translateX(12px);
+  pointer-events: none;
+}
+.explorer:not([data-phase="done"]) .diamond-hotspots {
+  pointer-events: none;
+}
+
+/* ── The diamond figure ────────────────────────────────────────────── */
+.diamond-figure {
+  position: relative;
+  width: var(--diamond-size);
+  aspect-ratio: 1 / 1;
+}
+.diamond-figure svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  /* Purely decorative (aria-hidden, no handlers) — but its blurred colour
+     blobs use overflow:visible and extend well past the figure's own box
+     (see the mask/blob markup in Explorer.tsx), and SVG hit-testing does
+     not respect the mask that makes those regions invisible there. Left
+     alone, that phantom hit area sits in front of the brand h1 above the
+     figure (both are "positioned" ancestors painted in DOM order, so the
+     later diamond-figure subtree wins) and swallows the hover that should
+     reset the panel to Overview. All real interaction already goes through
+     the separate .diamond-hotspots buttons layered on top of this svg, so
+     the svg needs no pointer events of its own. */
+  pointer-events: none;
+}
+@media (max-width: 1023.98px) {
+  .diamond-wrap {
+    padding: 40px 32px;
+    /* M2: re-derived alongside the desktop constant above, same model
+       (stacked layout is a single, full-width column, so stageCenter ≈
+       50vw here instead of 100vw/4.2). At the 15px stacked font,
+       "Mathematics" measures 91.66px; verified against a real 390px-wide
+       capture, this leaves ~16px margin to the stage edge. */
+    --diamond-size: min(48vh, calc(100vw - 266px));
+  }
+  .explorer[data-phase="intro"] .diamond-wrap {
+    /* X is 0 (single column, already centered); Y approximates the stage's
+       top padding (40px) plus half the wrap's own height (padding + half
+       the figure), minus roughly half the brand block (G1: now above the
+       wrap) that pushes the wrap's natural position further down. */
+    transform: translate(0, calc(50dvh - 142px - (var(--diamond-size) / 2)));
+  }
+}
+
+/* J2: the center dot is solid logo blue from first paint, forever — no
+   opacity state and no opacity transition (only its hover scale animates). */
+.diamond-dot {
+  opacity: 1;
+  transition: transform 160ms ease-out;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+/* Q2: scale derived from the halo's geometry, not chosen by eye — when
+   Logic is selected AND hovered, the scaled dot must exactly fill the
+   halo ring (its outer edge lands on the ring's INNER edge). The halo
+   (diamond-halo, Explorer.tsx) is drawn at radius R=21 with stroke-width
+   w=2, so its inner edge sits at R − w/2 = 20; the dot's own radius is
+   15, so scale = 20/15 = 1.3333… (4/3). This same value also drives the
+   plain hover-without-selection case (there's one data-hovered attribute,
+   not two) — checked against a capture, a ~2.6% change from the old 1.3
+   reads the same there. If either the halo's radius or stroke-width ever
+   changes, recompute this scale from the formula above or the two will
+   drift apart again. */
+.diamond-dot[data-hovered="true"] {
+  transform: scale(1.3333);
+}
+
+/* Interior wash — was an inline fill on the polygon; moved here so the Type
+   theory hotspot can darken it (see svg[data-tt-active] below) without
+   touching the mark's own colours. Fill-only, unchanged at rest. */
+.diamond-interior {
+  fill: color-mix(in srgb, var(--color-foreground) 8%, transparent);
+  transition: fill 160ms ease-out;
+}
+
+/* ── Type theory — the diamond's INTERIOR, not a corner. Its identity
+   colour is black (var(--color-foreground)) but that never paints the
+   interior at rest; hovering or selecting it only darkens the existing
+   wash to a clear grey — see .hotspot--typetheory below for the hit area
+   itself. Driven off one data attribute on the <svg> (set from
+   `hovered/selected === 'typetheory'` in Explorer.tsx). The centre Logic
+   dot deliberately stays white in every Type-theory state (never greyed) —
+   its own white disc reading clearly against the darkened wash IS the
+   "excluding the point of Logic" distinction the interior hotspot already
+   encodes geometrically; see --logo-dot-fill above (unchanged, no
+   Type-theory override). 18% keeps the wash dark enough that the white dot
+   still reads with real contrast against it (checked against a capture). */
+svg[data-tt-active="true"] .diamond-interior {
+  fill: color-mix(in srgb, var(--color-foreground) 18%, transparent);
+}
+
+/* J1: corners carry NO filled circle in any state (idle, hover, or
+   selected) — only this outline ring, centered on the vertex, appears on
+   hover/selected. Each corner's ring takes its own wheel colour (below)
+   instead of the single DS primary. */
+.diamond-ring {
+  stroke-width: 3;
+  opacity: 0;
+  transition: opacity 160ms ease-out;
+}
+.diamond-ring--linguistics {
+  stroke: var(--logo-green);
+}
+.diamond-ring--mathematics {
+  stroke: var(--logo-blue);
+}
+.diamond-ring--semiotics {
+  stroke: var(--logo-red);
+}
+.diamond-ring--informatics {
+  stroke: var(--logo-magenta);
+}
+.diamond-ring[data-hovered="true"] {
+  opacity: 0.45;
+}
+.diamond-ring[data-selected="true"] {
+  opacity: 0.65;
+}
+
+/* ── Hotspot buttons — real <button>s laid over the SVG so labels get
+   native text, focus and keyboard behaviour. Labels sit outside the
+   diamond so they never collide with the shape. ───────────────────── */
+.diamond-hotspots {
+  position: absolute;
+  inset: 0;
+}
+.hotspot {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  border-radius: 8px;
+}
+.hotspot:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+/* F5: the center dot renders much wider than 44px on a desktop-size figure —
+   give its hotspot a hit area proportional to the figure instead of the
+   fixed 44×44 the corner hotspots use. */
+.hotspot--logic {
+  width: 20%;
+  height: 20%;
+  /* Stacked above .hotspot--typetheory (below) so the dot keeps its own
+     hotspot even though Type theory's clipped interior button also spans
+     this area — hovering the dot must switch to Logic, not Type theory. */
+  z-index: 2;
+}
+/* The four corner hotspots stay on top of the interior button for the same
+   reason as Logic above — their (now enlarged, see below) hit areas can
+   graze the interior polygon's inner edge, and the corners must keep
+   winning there — modestly, so the interior still reads as Type theory's
+   zone everywhere else. P1: also grown from the fixed 44px to reach the
+   hover/selection ring's own outward reach (0.065 * --diamond-size,
+   ~30px at 1440×900 — see the N1 comment below), closing the dead gap
+   between the ring's outer edge and the button's old fixed edge that the
+   user could sweep the mouse through without triggering hover. */
+.hotspot--linguistics,
+.hotspot--mathematics,
+.hotspot--semiotics,
+.hotspot--informatics {
+  width: max(44px, calc(var(--diamond-size) * 0.13));
+  height: max(44px, calc(var(--diamond-size) * 0.13));
+  z-index: 2;
+}
+/* Type theory: not a corner — its hotspot is the diamond's INTERIOR only,
+   clipped to the polygon's INNER edge (the outline stroke is 13 units
+   wide, so the inner vertices sit ~9.2 units inside each drawn vertex; as
+   percentages of the 200×200 viewBox that's 50%,11.6% / 88.4%,50% /
+   50%,88.4% / 11.6%,50% — see the K2 RING_OFFSET-style derivation in the
+   ticket/commit that added this). Sized to the full figure (its cx/cy in
+   Explorer.tsx's AREAS is the nominal centre, 100,100 → left/top 50%/50%,
+   and the base .hotspot transform: translate(-50%,-50%) then centres this
+   100%-sized box exactly over the figure) so the clip-path's percentages
+   line up 1:1 with the viewBox. Lower z-index than the dot/corners above
+   so it never steals their area, only fills the rest of the interior. */
+.hotspot--typetheory {
+  width: 100%;
+  height: 100%;
+  clip-path: polygon(50% 11.6%, 88.4% 50%, 50% 88.4%, 11.6% 50%);
+  border-radius: 0;
+  z-index: 1;
+}
+.hotspot-label {
+  position: absolute;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  /* F4: a DOM child of the button — hover/click on it already fires the
+     button's own handlers even though it renders outside the button's box,
+     so it must stay interactive rather than pass clicks through. */
+  transition-property: color, opacity;
+  transition-duration: 160ms, 300ms;
+  transition-timing-function: ease-out, ease-out;
+}
+.hotspot[data-state="hover"] .hotspot-label {
+  color: var(--color-foreground);
+}
+/* Default selected colour — only "Logic" (the centre label) actually
+   lands here; its state cue lives on the dot's halo instead, so it
+   keeps the neutral foreground rather than taking a wheel colour of
+   its own. Each corner overrides this to its own anchor hue below. */
+.hotspot[data-state="selected"] .hotspot-label {
+  color: var(--color-foreground);
+}
+.hotspot--linguistics[data-state="selected"] .hotspot-label {
+  color: var(--logo-green);
+}
+.hotspot--mathematics[data-state="selected"] .hotspot-label {
+  color: var(--logo-blue);
+}
+.hotspot--semiotics[data-state="selected"] .hotspot-label {
+  color: var(--logo-red);
+}
+.hotspot--informatics[data-state="selected"] .hotspot-label {
+  color: var(--logo-magenta);
+}
+/* H2: labels ride along with the glide — hidden only through 'intro' and
+   'center', so their fade-in (with the existing stagger) plays out DURING
+   the ~820ms 'settling' transition instead of waiting until it finishes.
+   The corner nodes stay invisible at rest regardless (G2); the brand name
+   and right panel still wait for 'done' (below). */
+.explorer[data-phase="intro"] .hotspot-label,
+.explorer[data-phase="center"] .hotspot-label {
+  opacity: 0;
+}
+
+/* N1: the corner hover/selection ring (r=18, centred 5 units inward from
+   the vertex — see RING_OFFSET in Explorer.tsx) reaches 13 units OUTWARD
+   past the vertex once you account for that inward offset. Its outer edge
+   is therefore 13/200 = 6.5% of the figure's width, i.e.
+   0.065 * var(--diamond-size) px, measured from the vertex the button (and
+   the label) are centred on. The label's near edge sits 0.09 *
+   var(--diamond-size) from the vertex — ~5 units of clear air past the
+   ring's 13 — so it never overtakes the ring at any figure size.
+
+   P1: that offset used to be a MARGIN on the label, which left the gap
+   between the ring and the label as dead space no element actually
+   covered — sweeping the mouse from the ring to the label text dropped
+   the hover. It's PADDING now instead: the label's box edge sits flush
+   against the (now larger, see .hotspot--linguistics &c. above) button's
+   own edge, at max(44px, --diamond-size*0.13)'s half-width, and padding
+   fills the rest of the distance out to the same 0.09*--diamond-size
+   target the text always rendered at — so the text does not move, but the
+   space it used to float in beyond the margin is now inside the label's
+   own (still child-of-button, still bubbles to the button's handlers) hit
+   area. The subtracted half-width grew from the old fixed 22px to the
+   button's own new half-size for the same reason. */
+.hotspot--linguistics .hotspot-label {
+  left: 50%;
+  bottom: 100%;
+  transform: translateX(-50%);
+  padding-bottom: calc(
+    max(34px, var(--diamond-size) * 0.09) - max(22px, var(--diamond-size) * 0.065)
+  );
+  text-align: center;
+}
+.hotspot--mathematics .hotspot-label {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  padding-right: calc(
+    max(34px, var(--diamond-size) * 0.09) - max(22px, var(--diamond-size) * 0.065)
+  );
+  text-align: right;
+}
+.hotspot--semiotics .hotspot-label {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  padding-left: calc(
+    max(34px, var(--diamond-size) * 0.09) - max(22px, var(--diamond-size) * 0.065)
+  );
+  text-align: left;
+}
+.hotspot--informatics .hotspot-label {
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  padding-top: calc(
+    max(34px, var(--diamond-size) * 0.09) - max(22px, var(--diamond-size) * 0.065)
+  );
+  text-align: center;
+}
+/* G4/K1: "Logic" sits ABOVE the center dot, clear of its edge — the hotspot
+   button is dot-sized (F5's 20%, half-extent 20 viewBox units), so 100% of
+   the button already clears it. Font size matches every other label (K1). */
+.hotspot--logic .hotspot-label {
+  left: 50%;
+  bottom: 100%;
+  top: auto;
+  transform: translateX(-50%);
+  /* M1/Q1: positive — pushes the label UP, off the button-top line, so its
+     bottom edge clears the selected-state halo's outer edge. The halo's
+     radius (diamond-halo, r=21 — see Explorer.tsx) is now BIGGER than the
+     button's own 20-unit half-extent — it was raised from 18 (already
+     near-flush with that edge) to 21 for visibility, which pokes ~1
+     viewBox unit past the button edge the label is anchored to. 14px
+     covers that overshoot (≈1.8px at 1440×900, ≈0.9px at 1024×768) with
+     real clearance left over (≈6px+ at 1440×900) rather than shrinking
+     the ring back down to fit the old 6px — verified against real
+     captures at both breakpoints, halo showing (selected). */
+  margin-bottom: 14px;
+  margin-top: 0;
+  text-align: center;
+}
+
+/* Type theory's label sits BELOW the centre dot, mirroring "Logic" exactly
+   (including Q1's margin, so both stay equidistant from the halo): Logic's
+   label ends at bottom:100% of its 20%-sized button (= 40% of the figure)
+   plus this margin above; since this hotspot spans the whole interior
+   (100% × 100%, not 20%), that same button-relative trick can't be reused,
+   so the label is positioned explicitly at the mirrored absolute point
+   instead — top:60% of the figure (40%'s mirror around the 50% centre)
+   plus the same margin, pushing it further down. */
+.hotspot--typetheory .hotspot-label {
+  left: 50%;
+  top: 60%;
+  bottom: auto;
+  transform: translateX(-50%);
+  margin-top: 14px;
+  text-align: center;
+}
+
+@media (max-width: 1023.98px) {
+  .hotspot-label {
+    font-size: 15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .diamond-ring,
+  .diamond-dot,
+  .diamond-wrap,
+  .explorer-brand,
+  .brand-button,
+  .explorer-panel,
+  .hotspot-label {
+    transition: none !important;
+  }
 }
