@@ -5,6 +5,7 @@ import LogicPanel from '@/components/panels/LogicPanel'
 import MathematicsPanel from '@/components/panels/MathematicsPanel'
 import OverviewPanel from '@/components/panels/OverviewPanel'
 import SemioticsPanel from '@/components/panels/SemioticsPanel'
+import TypeTheoryPanel from '@/components/panels/TypeTheoryPanel'
 import { fetchArxiv } from '@/lib/arxiv'
 import { PAPERS } from '@/lib/papers'
 
@@ -23,6 +24,7 @@ export default async function Home() {
       semiotics={<SemioticsPanel />}
       informatics={<InformaticsPanel />}
       linguistics={<LinguisticsPanel />}
+      typetheory={<TypeTheoryPanel />}
     />
   )
 }
