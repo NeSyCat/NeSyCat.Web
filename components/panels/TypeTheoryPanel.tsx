@@ -16,8 +16,8 @@ const para: React.CSSProperties = {
   lineHeight: 'var(--lh-body)',
 }
 
-// The MNIST-addition axiom, verbatim (code tokens unchanged; doc comments
-// shortened to fit) from
+// The MNIST-addition axiom, verbatim (code tokens and line structure
+// unchanged; doc comments shortened to fit) from
 // NeSyCat.AI.HaskTorch/Examples/MnistAddition/D_Grammatical/Signature.hs
 // lines 29-60 — read-only source, harvested not modified.
 const HASKELL_SNIPPET = `-- | The per-pair FORMULA  n = digit(x) + digit(y), monad-polymorphic over m.
@@ -36,12 +36,17 @@ mnistFormula theta (x, y, n) =
 -- | The SENTENCE  forall (x,y,n) in data. n = digit(x) + digit(y)
 mnistSentence ::
   forall m.
-  (MnistKlFun m, TwoMonBLat Omega, A2MonBLat m Omega, Monad m) =>
+  ( MnistKlFun m,
+    TwoMonBLat Omega,
+    A2MonBLat m Omega,
+    Monad m
+  ) =>
   ParamsLogic Omega ->
   Guard m (m Image, m Image, m Natural) ->
   Weights ->
   m Omega
-mnistSentence lp guard theta = bigWedge lp guard (mnistFormula @m theta)`
+mnistSentence lp guard theta =
+  bigWedge lp guard (mnistFormula @m theta)`
 
 // § Type theory. Not a corner — the diamond's INTERIOR (see the
 // .hotspot--typetheory hit area in Explorer.tsx / globals.css). Points at

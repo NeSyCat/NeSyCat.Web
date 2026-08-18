@@ -368,25 +368,38 @@ body {
   padding: 56px;
   /* M2: the figure's width, expressed once — reused below by the
      stacked intro-transform's Y-offset calc so it never duplicates this
-     formula. Re-derived from real CDP measurements (not the earlier
-     comment's guess), since the old "350" constant left "Mathematics"
-     (the longer of the two side labels, 109.98px wide at 18px font) with
-     40+px of slack at the 1024px-wide breakpoint — starving the figure
-     far more than needed and, incidentally, leaving no headroom for the
-     "Logic" label above the centre halo (see the hotspot--logic rule
-     below). The model: the Mathematics label's left edge sits at
+     formula. The model: the Mathematics label's left edge sits at
      stageCenter − 0.43×figureWidth − 34px − labelWidth (34 = half the
      44px hotspot button + its 12px margin; 0.43 = 0.5 − the left
      vertex's 7% inset; stageCenter ≈ 100vw/4.4, the half-column's own
-     centre). Solving for the largest figureWidth that still leaves a
-     12–16px margin to the stage's true edge at the narrowest desktop
-     width (1024px) gives this constant; verified against real captures
-     at 1024×768 and 1440×900. P1: the divisor is coupled to the
-     .explorer grid split above — 2.2 here because the left column is
-     1 / (1 + 1.2) = 1/2.2 of the viewport now (was 1/2.1 at 1fr:1.1fr);
-     changing one without the other sizes the diamond against a column
-     that no longer exists. */
-  --diamond-size: min(52vh, calc(100vw / 2.2 - 290px));
+     centre — the flex column's padding cancels out of this, since
+     align-items:center centers within the content box).
+
+     F1 follow-up: the ORIGINAL 290px here was tuned only against
+     "Mathematics" at the fixed 18px corner font, and never re-checked at
+     the narrow end of the desktop range — at 1024px that left the figure
+     at just 175px, so cramped that (with the label-unclipping fix above)
+     "Type theory" no longer had room to sit inside the mark without
+     touching the coloured border, and the stage read as mostly empty
+     space. 290 → 255 alone would push "Mathematics" ~13px past the
+     viewport edge at 1024px (measured), so the 1024–1279.98px band below
+     also drops the CORNER font one step (18px → 14px, still well clear
+     of the 15px already used below 1024px) — that's what actually buys
+     the room: at 14px "Mathematics" measures ~95px instead of ~122px,
+     re-opening enough margin for 255 to hold at 1024px (verified against
+     real captures: fig 175px→~210px, corner margin still ≥12px). 1280px
+     and up keep the original 18px corner font (already had healthy
+     margin there) and gain a proportionate bump from the smaller
+     constant too. The centre labels ("Logic"/"Type theory") scale their
+     own font-size and vertical offset directly off --diamond-size (see
+     .hotspot--logic / .hotspot--typetheory-label below) since they are
+     the two labels that must fit INSIDE the mark rather than beside it —
+     a fixed 18px stopped fitting once the figure could be this small.
+     P1: the divisor is coupled to the .explorer grid split above — 2.2
+     here because the left column is 1 / (1 + 1.2) = 1/2.2 of the
+     viewport (was 1/2.1 at 1fr:1.1fr); changing one without the other
+     sizes the diamond against a column that no longer exists. */
+  --diamond-size: min(52vh, calc(100vw / 2.2 - 255px));
 }
 /* F2/H1: approximate, CSS-only centering for the server-rendered ("intro")
    paint — the one the browser shows before hydration's layout effect can
@@ -398,7 +411,7 @@ body {
    of flow (see .explorer-brand above), so .diamond-wrap is vertically
    centered on its own — the glide is purely horizontal, Y offset is 0. */
 .explorer[data-phase="intro"] .diamond-wrap {
-  transform: translate(calc(50vw - 100vw / 4.2), 0);
+  transform: translate(calc(50vw - 100vw / 4.4), 0);
 }
 .explorer:not([data-phase="done"]) .explorer-brand {
   opacity: 0;
@@ -438,12 +451,22 @@ body {
 @media (max-width: 1023.98px) {
   .diamond-wrap {
     padding: 40px 32px;
-    /* M2: re-derived alongside the desktop constant above, same model
+    /* M2/F1: re-derived alongside the desktop constant above, same model
        (stacked layout is a single, full-width column, so stageCenter ≈
-       50vw here instead of 100vw/4.2). At the 15px stacked font,
-       "Mathematics" measures 91.66px; verified against a real 390px-wide
-       capture, this leaves ~16px margin to the stage edge. */
-    --diamond-size: min(48vh, calc(100vw - 266px));
+       50vw here instead of 100vw/4.4). The original 266px was tuned only
+       against "Mathematics" at 15px and never re-checked against the
+       centre labels once they stopped being clip-path-truncated — at
+       390px it left the figure at just 124px, nowhere near enough for
+       "Type theory" to sit inside the mark without touching the border.
+       266 → 205 (paired with the <600px corner-font tier below, which
+       frees the margin this alone would have eaten) buys real room
+       across the 360–430px range (fig ~155→~225px); real captures
+       confirm "Mathematics" still keeps a positive, non-overflowing
+       margin at 360px, the narrowest width swept. The 48vh cap keeps
+       this formula from mattering above ~640px wide anyway (a
+       taller phone/tablet hits that ceiling first, unchanged from
+       before — see the 800×900 row in the verification sweep). */
+    --diamond-size: min(48vh, calc(100vw - 205px));
   }
   .explorer[data-phase="intro"] .diamond-wrap {
     /* X is 0 (single column, already centered); Y approximates the stage's
@@ -599,6 +622,26 @@ svg[data-tt-active="true"] .diamond-interior {
   border-radius: 0;
   z-index: 1;
 }
+/* F1: the label's unclipped sibling (see Explorer.tsx) — sized and centred
+   the same as the clipped interior above so the label's own percentage-based
+   position (below, mirroring .hotspot--logic) lands at the same spot, but
+   carrying NO clip-path of its own, so "Type theory" is never sliced. It
+   must not swallow hover/click over the rest of the diamond (the corners,
+   the centre dot, and the clipped interior all still need those), so the
+   button itself is pointer-events:none; only its .hotspot-label child (the
+   actual visible words) reclaims pointer-events:auto, which is enough to
+   remain independently hit-testable — the click still bubbles up to fire
+   this button's own handlers. */
+.hotspot--typetheory-label {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.hotspot--typetheory-label .hotspot-label {
+  pointer-events: auto;
+}
 .hotspot-label {
   position: absolute;
   font-size: 18px;
@@ -720,7 +763,7 @@ svg[data-tt-active="true"] .diamond-interior {
      real clearance left over (≈6px+ at 1440×900) rather than shrinking
      the ring back down to fit the old 6px — verified against real
      captures at both breakpoints, halo showing (selected). */
-  margin-bottom: 14px;
+  margin-bottom: clamp(6px, calc(var(--diamond-size) * 0.045), 14px);
   margin-top: 0;
   text-align: center;
 }
@@ -733,18 +776,73 @@ svg[data-tt-active="true"] .diamond-interior {
    so the label is positioned explicitly at the mirrored absolute point
    instead — top:60% of the figure (40%'s mirror around the 50% centre)
    plus the same margin, pushing it further down. */
-.hotspot--typetheory .hotspot-label {
+.hotspot--typetheory-label .hotspot-label {
   left: 50%;
   top: 60%;
   bottom: auto;
   transform: translateX(-50%);
-  margin-top: 14px;
+  margin-top: clamp(6px, calc(var(--diamond-size) * 0.045), 14px);
   text-align: center;
+}
+
+/* F1 follow-up: "Logic" and "Type theory" are the two labels that must sit
+   INSIDE the mark, not beside it — a fixed 18px/15px (like every corner
+   label below) stopped fitting once the label-unclipping fix above made
+   "Type theory" render at its full, un-truncated width against whatever
+   room the shrunken figure actually had. Scaling directly off
+   --diamond-size keeps both fitting at every figure size instead: capped
+   at 18px so nothing changes from the original design at 1440×900 (fig
+   ≥360px hits the cap), floored at 9px so it never disappears at the
+   narrowest phone width. The 0.05 growth rate (not the more obvious
+   ~0.075 a fixed-18px-at-current-fig extrapolation would suggest) is
+   deliberately shallow: solving avail(fig) ≥ need(fig) — where avail is
+   the interior polygon's half-width at the label's height
+   (0.284×figureSize, after the fixed vertical offset below) and need is
+   half the rendered text width (∝ font-size) — for the rate that holds
+   at EVERY figure size (not just the ones measured) requires rate ≤
+   ~0.052 given this text's measured width-per-font-size; 0.05 leaves a
+   safety margin, confirmed against real captures at all nine swept
+   widths (360–1440px), not just the two or three that were checked
+   before. Two classes beat the corner labels' one (.hotspot-label below)
+   on plain specificity, so this wins without !important regardless of
+   load order or the width bands below. */
+.hotspot--logic .hotspot-label,
+.hotspot--typetheory-label .hotspot-label {
+  font-size: clamp(9px, calc(var(--diamond-size) * 0.05), 18px);
+}
+
+/* F1 follow-up: re-enlarging the figure at 1024–1279.98px (see the
+   --diamond-size comment above) only leaves "Mathematics" enough margin
+   to the viewport edge if the CORNER labels give back one font step here
+   too — still comfortably larger than the 15px already used below
+   1024px. 1280px and up (and the stacked layout, its own rule below)
+   are untouched. */
+@media (min-width: 1024px) and (max-width: 1279.98px) {
+  .hotspot--linguistics .hotspot-label,
+  .hotspot--mathematics .hotspot-label,
+  .hotspot--semiotics .hotspot-label,
+  .hotspot--informatics .hotspot-label {
+    font-size: 14px;
+  }
 }
 
 @media (max-width: 1023.98px) {
   .hotspot-label {
     font-size: 15px;
+  }
+}
+
+/* F1 follow-up: the stacked --diamond-size constant above was also
+   re-derived smaller (bigger figure) to give the centre labels room, and
+   at phone widths that only clears "Mathematics" from the viewport edge
+   if the corner labels give back a second font step here too — 12px,
+   still legible, one step below the 15px used from 600px up to 1024px. */
+@media (max-width: 599.98px) {
+  .hotspot--linguistics .hotspot-label,
+  .hotspot--mathematics .hotspot-label,
+  .hotspot--semiotics .hotspot-label,
+  .hotspot--informatics .hotspot-label {
+    font-size: 12px;
   }
 }
 

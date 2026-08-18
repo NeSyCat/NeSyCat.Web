@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
+import { Fragment, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 
 type AreaId = 'linguistics' | 'mathematics' | 'semiotics' | 'informatics' | 'logic' | 'typetheory'
 type PanelId = AreaId | 'overview'
@@ -491,6 +491,49 @@ export default function Explorer({
             <div className="diamond-hotspots" role="tablist" aria-label="NeSyCat areas">
               {AREAS.map((a, i) => {
                 const state = selected === a.id ? 'selected' : hovered === a.id ? 'hover' : 'idle'
+                const pos = { left: `${(a.cx / 200) * 100}%`, top: `${(a.cy / 200) * 100}%` }
+                // F1: "Type theory" is a special case. Its interior hit area is
+                // still clip-path'd to the polygon's inner edge (unchanged shape,
+                // unchanged hover/click behaviour) — but clip-path clips ALL
+                // descendants, so the label text used to be sliced along with it
+                // once the figure shrank below ~1230px. The label now lives OUTSIDE
+                // that clipped element entirely, as an unclipped sibling positioned
+                // at the same mirrored point, wired with the identical handlers so
+                // hovering/clicking the words themselves still selects Type theory.
+                // To keep exactly one Tab stop for this area (same tab/ARIA
+                // semantics as before, not two), the label button is the one real
+                // role="tab" control here; the interior stays mouse/touch-only,
+                // presentational and out of the tab order.
+                if (a.id === 'typetheory') {
+                  return (
+                    <Fragment key={a.id}>
+                      <div
+                        aria-hidden="true"
+                        className="hotspot hotspot--typetheory"
+                        style={pos}
+                        onMouseEnter={() => interactive && setHovered(a.id)}
+                        onMouseLeave={() => setHovered(null)}
+                        onClick={() => selectArea(a.id)}
+                      />
+                      <button
+                        type="button"
+                        role="tab"
+                        aria-selected={selected === a.id}
+                        tabIndex={interactive ? 0 : -1}
+                        className="hotspot hotspot--typetheory-label"
+                        data-state={state}
+                        style={pos}
+                        onMouseEnter={() => interactive && setHovered(a.id)}
+                        onMouseLeave={() => setHovered(null)}
+                        onClick={() => selectArea(a.id)}
+                      >
+                        <span className="hotspot-label" style={{ transitionDelay: `0ms, ${i * STAGGER_MS}ms` }}>
+                          {a.label}
+                        </span>
+                      </button>
+                    </Fragment>
+                  )
+                }
                 return (
                   <button
                     key={a.id}
@@ -500,7 +543,7 @@ export default function Explorer({
                     tabIndex={interactive ? 0 : -1}
                     className={`hotspot hotspot--${a.id}`}
                     data-state={state}
-                    style={{ left: `${(a.cx / 200) * 100}%`, top: `${(a.cy / 200) * 100}%` }}
+                    style={pos}
                     onMouseEnter={() => interactive && setHovered(a.id)}
                     onMouseLeave={() => setHovered(null)}
                     onClick={() => selectArea(a.id)}
