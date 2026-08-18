@@ -22,6 +22,35 @@ const SETTLE_MS = 820
 const SETTLE_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)'
 const STAGGER_MS = 60
 
+// K2 (rev 10 correction): the round join's OUTER cap is a circle of radius
+// strokeWidth/2 = 6.5 centered AT the vertex, so it only bulges 6.5 units
+// outward — but the polygon's own INNER corner sits ~6.5/sin(45°) ≈ 9.2
+// units further back along the same axis, and the two arms add substantial
+// extra mass further inward still. Net effect: the visible corner mass's
+// center of gravity sits INWARD of the vertex, not outward (rev 8's +6.5
+// outward offset had the sign backwards and doubled the error). Confirmed
+// by measurement: a fixed-point centroid of solid-blue pixels within a
+// 13-unit-radius disc (iterated from the vertex, 5 iterations to
+// convergence) landed ~4.95 viewBox units inward with negligible
+// cross-axis component — rounded to 5.0. Same offset for all four corners,
+// applied toward the figure's center (100,100).
+const RING_OFFSET = 5.0
+
+function ringCenter(a: Area): { cx: number; cy: number } {
+  switch (a.id) {
+    case 'linguistics':
+      return { cx: a.cx, cy: a.cy + RING_OFFSET }
+    case 'mathematics':
+      return { cx: a.cx + RING_OFFSET, cy: a.cy }
+    case 'semiotics':
+      return { cx: a.cx - RING_OFFSET, cy: a.cy }
+    case 'informatics':
+      return { cx: a.cx, cy: a.cy - RING_OFFSET }
+    default:
+      return { cx: a.cx, cy: a.cy }
+  }
+}
+
 // SSR renders nothing (Next pre-renders client components on the server, and
 // useLayoutEffect warns there); on the client it's the real, synchronous,
 // pre-paint layout effect the FLIP sequence depends on.
@@ -163,13 +192,57 @@ export default function Explorer({ overview, logic, mathematics, semiotics, info
         <div className="diamond-wrap" ref={wrapRef}>
           <div className="diamond-figure">
             <svg viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+              <defs>
+                {/* One gradient per edge, colour-wheel-true (not an RGB
+                    lerp) between its two corner anchors — see the --logo-*
+                    block in globals.css for why the stops are what they
+                    are. Adjacent gradients share the identical colour at
+                    each vertex, so the round-capped segments below meet
+                    there seamlessly. */}
+                <linearGradient id="logo-edge-lt" gradientUnits="userSpaceOnUse" x1={14} y1={100} x2={100} y2={14}>
+                  <stop offset="0%" stopColor="var(--logo-blue)" />
+                  <stop offset="25%" stopColor="var(--logo-lt-1)" />
+                  <stop offset="50%" stopColor="var(--logo-lt-2)" />
+                  <stop offset="75%" stopColor="var(--logo-lt-3)" />
+                  <stop offset="100%" stopColor="var(--logo-green)" />
+                </linearGradient>
+                <linearGradient id="logo-edge-tr" gradientUnits="userSpaceOnUse" x1={100} y1={14} x2={186} y2={100}>
+                  <stop offset="0%" stopColor="var(--logo-green)" />
+                  <stop offset="25%" stopColor="var(--logo-tr-1)" />
+                  <stop offset="50%" stopColor="var(--logo-tr-2)" />
+                  <stop offset="75%" stopColor="var(--logo-tr-3)" />
+                  <stop offset="100%" stopColor="var(--logo-red)" />
+                </linearGradient>
+                <linearGradient id="logo-edge-rb" gradientUnits="userSpaceOnUse" x1={186} y1={100} x2={100} y2={186}>
+                  <stop offset="0%" stopColor="var(--logo-red)" />
+                  <stop offset="25%" stopColor="var(--logo-rb-1)" />
+                  <stop offset="50%" stopColor="var(--logo-rb-2)" />
+                  <stop offset="75%" stopColor="var(--logo-rb-3)" />
+                  <stop offset="100%" stopColor="var(--logo-magenta)" />
+                </linearGradient>
+                <linearGradient id="logo-edge-bl" gradientUnits="userSpaceOnUse" x1={100} y1={186} x2={14} y2={100}>
+                  <stop offset="0%" stopColor="var(--logo-magenta)" />
+                  <stop offset="25%" stopColor="var(--logo-bl-1)" />
+                  <stop offset="50%" stopColor="var(--logo-bl-2)" />
+                  <stop offset="75%" stopColor="var(--logo-bl-3)" />
+                  <stop offset="100%" stopColor="var(--logo-blue)" />
+                </linearGradient>
+              </defs>
+              {/* Fill-only, behind the stroke segments — a faint neutral
+                  wash (foreground, not primary) so it doesn't bias the
+                  multicolour border toward any one corner's hue. */}
               <polygon
                 points="100,14 186,100 100,186 14,100"
-                fill="color-mix(in srgb, var(--color-primary) 6%, transparent)"
-                stroke="var(--color-primary)"
-                strokeWidth={13}
-                strokeLinejoin="round"
+                fill="color-mix(in srgb, var(--color-foreground) 8%, transparent)"
               />
+              {/* Four edges, each its own gradient. strokeLinecap="round"
+                  reproduces the old single-polygon round-join corners
+                  exactly: the cap radius (strokeWidth/2 = 6.5) is the same
+                  bulge the round join produced. */}
+              <line x1={14} y1={100} x2={100} y2={14} stroke="url(#logo-edge-lt)" strokeWidth={13} strokeLinecap="round" />
+              <line x1={100} y1={14} x2={186} y2={100} stroke="url(#logo-edge-tr)" strokeWidth={13} strokeLinecap="round" />
+              <line x1={186} y1={100} x2={100} y2={186} stroke="url(#logo-edge-rb)" strokeWidth={13} strokeLinecap="round" />
+              <line x1={100} y1={186} x2={14} y2={100} stroke="url(#logo-edge-bl)" strokeWidth={13} strokeLinecap="round" />
               {AREAS.map((a) => {
                 const isHovered = hovered === a.id
                 const isSelected = selected === a.id
@@ -178,36 +251,52 @@ export default function Explorer({ overview, logic, mathematics, semiotics, info
                   <g key={a.id}>
                     {isCenter ? (
                       <>
-                        {/* Center dot keeps its existing ring-on-selected treatment. */}
+                        {/* Center dot keeps its existing ring-on-selected treatment,
+                            now in foreground (not primary blue) — the dot's own
+                            white-with-dark-ring look already carries its identity,
+                            so the halo just needs a neutral state cue. M1: r shrunk
+                            20→18 (still a full ring around the r=15 dot) so its outer
+                            edge no longer coincides with the "Logic" label's hotspot
+                            button edge — see the .hotspot--logic rule in globals.css. */}
                         {isSelected && (
                           <circle
                             cx={a.cx}
                             cy={a.cy}
-                            r={20}
+                            r={18}
                             className="diamond-halo"
                             fill="none"
-                            stroke="var(--color-primary)"
+                            stroke="var(--color-foreground)"
                             strokeOpacity={0.25}
                             strokeWidth={2}
                           />
                         )}
+                        {/* Plain white disc, no stroke — the user asked for the
+                            dark ring hugging the dot to go. It reads clean
+                            against the interior wash because that wash was
+                            deepened (5%→8%) precisely so an unstroked white
+                            circle still has enough contrast to read on its
+                            own. */}
                         <circle
                           cx={a.cx}
                           cy={a.cy}
                           r={15}
                           className="diamond-dot"
-                          fill="var(--color-primary)"
+                          fill="var(--logo-dot-fill)"
                           data-hovered={isHovered}
                         />
                       </>
                     ) : (
                       // J1: corners carry NO filled circle in any state — only an
-                      // outline ring on hover/selected, never a solid dot.
+                      // outline ring on hover/selected, never a solid dot. K2: its
+                      // center is nudged outward (ringCenter) so the round-joined
+                      // stroke bulge reads concentric inside it, not inset. Each
+                      // corner's ring takes its own wheel colour via the
+                      // diamond-ring--<id> class (see globals.css).
                       <circle
-                        cx={a.cx}
-                        cy={a.cy}
-                        r={13}
-                        className="diamond-ring"
+                        cx={ringCenter(a).cx}
+                        cy={ringCenter(a).cy}
+                        r={18}
+                        className={`diamond-ring diamond-ring--${a.id}`}
                         fill="none"
                         data-hovered={isHovered}
                         data-selected={isSelected}

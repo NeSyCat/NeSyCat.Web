@@ -31,7 +31,7 @@ export default function LinguisticsPanel() {
         translation.
       </p>
 
-      <p style={{ ...para, margin: 0, fontSize: 13.5, color: 'var(--color-muted-foreground)' }}>
+      <p style={{ ...para, margin: 0, color: 'var(--color-muted-foreground)' }}>
         This layer is in active development alongside the NeSyCat NLP paper.
       </p>
     </section>

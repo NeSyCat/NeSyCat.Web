@@ -28,12 +28,6 @@
   text-transform: uppercase;
   color: var(--color-primary);
 }
-.t-lead {
-  font-family: var(--font-body);
-  font-size: 1.125rem;
-  line-height: var(--lh-body);
-  color: var(--color-text-secondary);
-}
 
 /* Large CTA — extends the DS pill .btn for hero-scale actions. */
 .btn--lg {
@@ -65,12 +59,87 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Rev 9: Shiki code blocks (the Mathematics panel's real Lean excerpt) —
+   themed syntax highlighting restyled to match the site: surface
+   background, hairline border, Geist Mono, and its own horizontal scroll
+   so a long code line never widens the panel (the F1 lesson). Shiki sets
+   token colors inline; this only overrides the container. */
+.code-block .shiki {
+  margin: 0;
+  padding: 11px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  font-family: var(--font-geist-mono), 'SF Mono', Menlo, ui-monospace, monospace;
+  font-size: 11.5px;
+  line-height: 1.38;
+  background: var(--color-surface) !important;
+}
+.code-block .shiki code {
+  font-family: inherit;
+  background: transparent;
+}
+
 body {
   background: var(--color-background);
   color: var(--color-text-secondary);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
+}
+
+/* ── Brand-mark colour wheel ───────────────────────────────────────────
+   The diamond mark is the one piece of UI that deliberately carries its
+   own multi-colour palette instead of a single DS semantic colour — this
+   has no equivalent in the DS's single-primary model, so these are
+   scoped `--logo-*` and consumed ONLY by the diamond mark (SVG stroke
+   gradients + its corner rings/labels). Never reach for these outside
+   the mark.
+
+   The four corner anchors sit at true colour-wheel hues — blue 219°,
+   green 136°, red 5°, magenta 292° (the actual wheel midpoint between
+   blue and red, not an RGB average of the two). --logo-blue's value
+   equals --color-primary (#3478F6) so the mark stays on-brand; it's
+   restated as its own literal here (rather than `var(--color-primary)`)
+   so every gradient stop it seeds resolves against the exact hue the
+   other stops were computed from. Each edge's three inner stops are the
+   true intermediate wheel hues between its two corners (cyan between
+   blue/green, amber between green/red, pink between red/magenta, violet
+   between magenta/blue) — a straight RGB lerp would instead pass through
+   a muddy grey/brown midpoint. A flat four-colour variant was tried and
+   rejected in review: the wheel is the chosen design. ──────────────── */
+:root {
+  /* Corner anchors */
+  --logo-blue: #3478f6; /* left   — Mathematics, hue 219° (= --color-primary) */
+  --logo-green: #34a853; /* top    — Linguistics, hue 136° */
+  --logo-red: #ea4335; /* right  — Semiotics,   hue 5°   */
+  --logo-magenta: #d634f0; /* bottom — Informatics, hue 292° */
+
+  /* left → top edge, through cyan */
+  --logo-lt-1: #2db0ea;
+  --logo-lt-2: #27dcd4;
+  --logo-lt-3: #2dc389;
+
+  /* top → right edge, through amber */
+  --logo-tr-1: #57bd30;
+  --logo-tr-2: #b6d42a;
+  --logo-tr-3: #e09d2e;
+
+  /* right → bottom edge, through pink */
+  --logo-rb-1: #ec355e;
+  --logo-rb-2: #ed3596;
+  --logo-rb-3: #ef34d0;
+
+  /* bottom → left edge, through violet */
+  --logo-bl-1: #9e34f2;
+  --logo-bl-2: #6534f3;
+  --logo-bl-3: #343df5;
+
+  /* Centre dot fill — deliberately a literal white rather than
+     var(--color-card): the brief asks for the dot to read as
+     unmistakably white against the off-white page, and --color-card
+     flips to dark navy under .dark, which would defeat that. */
+  --logo-dot-fill: #ffffff;
 }
 
 /* ── Explorer — the single-screen diamond figure + switching panel ────
@@ -98,7 +167,7 @@ body {
 .explorer-panel {
   min-height: 0;
   overflow-y: auto;
-  padding: 56px;
+  padding: 40px 56px;
   border-left: 1px solid var(--color-border);
   transition: opacity 400ms ease-out, transform 400ms ease-out;
 }
@@ -161,14 +230,23 @@ body {
    ──────────────────────────────────────────────────────────────────── */
 .diamond-wrap {
   padding: 56px;
-  /* G3/F6: the figure's width, expressed once — reused below by the
+  /* M2: the figure's width, expressed once — reused below by the
      stacked intro-transform's Y-offset calc so it never duplicates this
-     formula. The subtracted constant reserves room for the 18px
-     Mathematics/Semiotics side labels (~106px text + 12px margin) outside
-     the diamond's vertex, which itself sits ~7% inside its own bounding
-     box — verified against a real 1024px-wide capture (the narrowest
-     desktop width) where a smaller constant let "Mathematics" clip. */
-  --diamond-size: min(52vh, calc(100vw / 2.1 - 350px));
+     formula. Re-derived from real CDP measurements (not the earlier
+     comment's guess), since the old "350" constant left "Mathematics"
+     (the longer of the two side labels, 109.98px wide at 18px font) with
+     40+px of slack at the 1024px-wide breakpoint — starving the figure
+     far more than needed and, incidentally, leaving no headroom for the
+     "Logic" label above the centre halo (see the hotspot--logic rule
+     below). The model: the Mathematics label's left edge sits at
+     stageCenter − 0.43×figureWidth − 34px − labelWidth (34 = half the
+     44px hotspot button + its 12px margin; 0.43 = 0.5 − the left
+     vertex's 7% inset; stageCenter ≈ 100vw/4.2, the half-column's own
+     centre). Solving for the largest figureWidth that still leaves a
+     12–16px margin to the stage's true edge at the narrowest desktop
+     width (1024px) gives this constant; verified against real captures
+     at 1024×768 and 1440×900 leaves ~15px and ~30px margin respectively. */
+  --diamond-size: min(52vh, calc(100vw / 2.1 - 290px));
 }
 /* F2/H1: approximate, CSS-only centering for the server-rendered ("intro")
    paint — the one the browser shows before hydration's layout effect can
@@ -209,10 +287,12 @@ body {
 @media (max-width: 1023.98px) {
   .diamond-wrap {
     padding: 40px 32px;
-    /* G3/F6: bigger (15px) stacked labels need more horizontal room too —
-       verified against a real 390px-wide capture where a smaller constant
-       let "Mathematics" clip at the left edge. */
-    --diamond-size: min(48vh, calc(100vw - 270px));
+    /* M2: re-derived alongside the desktop constant above, same model
+       (stacked layout is a single, full-width column, so stageCenter ≈
+       50vw here instead of 100vw/4.2). At the 15px stacked font,
+       "Mathematics" measures 91.66px; verified against a real 390px-wide
+       capture, this leaves ~16px margin to the stage edge. */
+    --diamond-size: min(48vh, calc(100vw - 266px));
   }
   .explorer[data-phase="intro"] .diamond-wrap {
     /* X is 0 (single column, already centered); Y approximates the stage's
@@ -237,18 +317,30 @@ body {
 
 /* J1: corners carry NO filled circle in any state (idle, hover, or
    selected) — only this outline ring, centered on the vertex, appears on
-   hover/selected. */
+   hover/selected. Each corner's ring takes its own wheel colour (below)
+   instead of the single DS primary. */
 .diamond-ring {
-  stroke: var(--color-primary);
-  stroke-width: 2.5;
+  stroke-width: 3;
   opacity: 0;
   transition: opacity 160ms ease-out;
 }
+.diamond-ring--linguistics {
+  stroke: var(--logo-green);
+}
+.diamond-ring--mathematics {
+  stroke: var(--logo-blue);
+}
+.diamond-ring--semiotics {
+  stroke: var(--logo-red);
+}
+.diamond-ring--informatics {
+  stroke: var(--logo-magenta);
+}
 .diamond-ring[data-hovered="true"] {
-  opacity: 0.85;
+  opacity: 0.45;
 }
 .diamond-ring[data-selected="true"] {
-  opacity: 1;
+  opacity: 0.65;
 }
 
 /* ── Hotspot buttons — real <button>s laid over the SVG so labels get
@@ -299,8 +391,24 @@ body {
 .hotspot[data-state="hover"] .hotspot-label {
   color: var(--color-foreground);
 }
+/* Default selected colour — only "Logic" (the centre label) actually
+   lands here; its state cue lives on the dot's halo instead, so it
+   keeps the neutral foreground rather than taking a wheel colour of
+   its own. Each corner overrides this to its own anchor hue below. */
 .hotspot[data-state="selected"] .hotspot-label {
-  color: var(--color-primary);
+  color: var(--color-foreground);
+}
+.hotspot--linguistics[data-state="selected"] .hotspot-label {
+  color: var(--logo-green);
+}
+.hotspot--mathematics[data-state="selected"] .hotspot-label {
+  color: var(--logo-blue);
+}
+.hotspot--semiotics[data-state="selected"] .hotspot-label {
+  color: var(--logo-red);
+}
+.hotspot--informatics[data-state="selected"] .hotspot-label {
+  color: var(--logo-magenta);
 }
 /* H2: labels ride along with the glide — hidden only through 'intro' and
    'center', so their fade-in (with the existing stagger) plays out DURING
@@ -340,21 +448,28 @@ body {
   margin-top: 10px;
   text-align: center;
 }
-/* G4: "Logic" sits ABOVE the center dot, clear of its edge — the hotspot
+/* G4/K1: "Logic" sits ABOVE the center dot, clear of its edge — the hotspot
    button is dot-sized (F5's 20%), so 100% of the button already clears it.
-   Smaller font + small margin are both on purpose: the diamond narrows to
-   a point above center, so at the smallest diamond size (F6's ~1024px-wide
-   desktop / 390px-wide stacked cases) the general 18px/15px label size
-   doesn't leave room before the sloped stroke — this keeps the label both
-   closer to the (wider) dot and narrower, so it clears the taper. */
+   Font size matches every other label (K1). M1: the button's top edge and
+   the selected-state halo's outer edge (diamond-halo, r=18 — see
+   Explorer.tsx) sit at almost the same height, so the label needs real
+   positive clearance above the button, not the old negative margin that
+   pulled it INTO that zone. */
 .hotspot--logic .hotspot-label {
   left: 50%;
   bottom: 100%;
   top: auto;
   transform: translateX(-50%);
-  margin-bottom: 2px;
+  /* M1: positive — pushes the label UP, off the button-top line, so its
+     bottom edge clears the selected-state halo's outer edge (r=18,
+     concentric with the button's own top edge to within ~1% of the
+     figure's size) with a visible gap at every breakpoint: this fixed
+     6px plus the size-proportional gap the smaller halo radius already
+     buys (≈4px at 1440×900, ≈2px at 1024×768) — verified against real
+     captures at both. Was -6px before M1, which pulled the label the
+     other way, straight into the halo. */
+  margin-bottom: 6px;
   margin-top: 0;
-  font-size: 14px;
   text-align: center;
 }
 

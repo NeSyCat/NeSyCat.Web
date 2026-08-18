@@ -63,7 +63,7 @@ export default function InformaticsPanel() {
                 {b.lang}
               </span>
             </div>
-            <p style={{ marginTop: 10, fontSize: 13.5, color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
+            <p style={{ marginTop: 10, fontSize: 15, color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
               {b.blurb}
             </p>
           </div>

@@ -85,7 +85,7 @@ function PaperCard({ paper: p, meta }: { paper: ArxivPaper; meta?: Meta }) {
         {p.published && <> · {p.published.slice(0, 10)}</>}
         {p.categories.length > 0 && <> · {p.categories.join(' / ')}</>}
       </div>
-      <p style={{ marginTop: 16, fontSize: 14, color: 'var(--color-text-secondary)', lineHeight: 1.7 }}>
+      <p style={{ marginTop: 16, fontSize: 15, color: 'var(--color-text-secondary)', lineHeight: 1.7 }}>
         {p.abstract}
       </p>
       <pre
@@ -127,7 +127,7 @@ function FallbackCard({ input }: { input: string }) {
       <div className="t-eyebrow" style={{ color: 'var(--color-muted-foreground)' }}>
         Couldn&apos;t fetch from arXiv
       </div>
-      <p style={{ marginTop: 8, fontSize: 13, color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
+      <p style={{ marginTop: 8, fontSize: 15, color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
         <span className="t-code">{input}</span> — the arXiv API may be rate-limiting or the id may
         not be live yet. The page retries on the next revalidation tick.
       </p>

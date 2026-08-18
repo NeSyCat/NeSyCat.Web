@@ -46,7 +46,7 @@ export default function SemioticsPanel() {
           }}
         />
       </div>
-      <p style={{ margin: '10px 2px 0', fontSize: 12.5, color: 'var(--color-muted-foreground)', lineHeight: 1.6 }}>
+      <p style={{ margin: '10px 2px 0', fontSize: 15, color: 'var(--color-muted-foreground)', lineHeight: 1.6 }}>
         GitHub sign-in can&apos;t complete inside the embed above — open the editor in its own tab
         to sign in and save.
       </p>
