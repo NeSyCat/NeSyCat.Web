@@ -1,54 +1,43 @@
 import { GitHubIcon, LinkButton } from '../Buttons'
-import { fetchArxiv, bibtexFor, type ArxivPaper } from '@/lib/arxiv'
+import { bibtexFor, type ArxivPaper } from '@/lib/arxiv'
 import { PAPERS, PAPER_META } from '@/lib/papers'
 
 type Meta = { code?: string; featured?: boolean }
 
-// § Papers. Every entry is fetched live from arXiv (lib/papers.ts) — title,
+const h2: React.CSSProperties = {
+  margin: '12px 0 8px',
+  fontSize: 'var(--text-h2)',
+  fontWeight: 600,
+  color: 'var(--color-foreground)',
+  letterSpacing: '-0.015em',
+}
+const intro: React.CSSProperties = {
+  margin: '0 0 32px',
+  fontSize: 15,
+  color: 'var(--color-text-secondary)',
+  maxWidth: 640,
+  lineHeight: 'var(--lh-body)',
+}
+
+// § Logic. Every entry is fetched live from arXiv (lib/papers.ts) — title,
 // authors, abstract, date, all categories and a BibTeX entry. NeSyCat Torch is
 // featured (more elevated + a Code link); the theory paper is the foundation.
-export default async function Paper() {
-  const results = await Promise.all(PAPERS.map((id) => fetchArxiv(id)))
-  const failedIds = PAPERS.filter((_, i) => results[i] === null)
+// The fetch happens once in app/page.tsx (server); this panel only renders it.
+export default function LogicPanel({ papers }: { papers: (ArxivPaper | null)[] }) {
+  const failedIds = PAPERS.filter((_, i) => papers[i] === null)
 
   return (
-    <section
-      id="paper"
-      style={{
-        padding: '48px 48px 72px',
-        borderTop: '1px solid var(--color-border)',
-        maxWidth: 1120,
-        margin: '0 auto',
-      }}
-    >
-      <div className="t-eyebrow">§ Papers</div>
-      <h2
-        style={{
-          margin: '12px 0 8px',
-          fontSize: 'var(--text-h2)',
-          fontWeight: 600,
-          color: 'var(--color-foreground)',
-          letterSpacing: '-0.015em',
-        }}
-      >
-        Read the work.
-      </h2>
-      <p
-        style={{
-          margin: '0 0 32px',
-          fontSize: 15,
-          color: 'var(--color-text-secondary)',
-          maxWidth: 640,
-          lineHeight: 'var(--lh-body)',
-        }}
-      >
+    <section>
+      <div className="t-eyebrow">§ Logic · Papers</div>
+      <h2 style={h2}>Read the work.</h2>
+      <p style={intro}>
         NeSyCat Torch is the neural implementation; the categorical theory paper is the foundation
         it builds on.
       </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         {PAPERS.map((id, i) =>
-          results[i] ? <PaperCard key={id} paper={results[i] as ArxivPaper} meta={PAPER_META[id]} /> : null,
+          papers[i] ? <PaperCard key={id} paper={papers[i] as ArxivPaper} meta={PAPER_META[id]} /> : null,
         )}
         {failedIds.map((id) => (
           <FallbackCard key={id} input={id} />

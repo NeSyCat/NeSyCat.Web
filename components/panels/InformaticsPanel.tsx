@@ -25,52 +25,34 @@ const BACKENDS: Backend[] = [
   },
 ]
 
-export default function Repos() {
+const h2: React.CSSProperties = {
+  margin: '12px 0 10px',
+  fontSize: 'var(--text-h2)',
+  fontWeight: 600,
+  color: 'var(--color-foreground)',
+  letterSpacing: '-0.015em',
+}
+const intro: React.CSSProperties = {
+  margin: '0 0 28px',
+  fontSize: 15,
+  color: 'var(--color-text-secondary)',
+  maxWidth: 600,
+  lineHeight: 'var(--lh-body)',
+}
+
+// § Informatics. Adapted from Repos.tsx — the three backends, stacked in a
+// single column (this panel is half the viewport, not the full page).
+export default function InformaticsPanel() {
   return (
-    <section
-      id="code"
-      style={{
-        padding: '48px 48px 80px',
-        borderTop: '1px solid var(--color-border)',
-        maxWidth: 1120,
-        margin: '0 auto',
-        textAlign: 'center',
-      }}
-    >
-      <div className="t-eyebrow">§ NeSyCat Torch · Implementations</div>
-      <h2
-        style={{
-          margin: '12px 0 10px',
-          fontSize: 'var(--text-h2)',
-          fontWeight: 600,
-          color: 'var(--color-foreground)',
-          letterSpacing: '-0.015em',
-        }}
-      >
-        One spec, three backends.
-      </h2>
-      <p
-        style={{
-          margin: '0 auto 32px',
-          fontSize: 15,
-          color: 'var(--color-text-secondary)',
-          maxWidth: 600,
-          lineHeight: 'var(--lh-body)',
-        }}
-      >
-        NeSyCat Torch runs the same monad-polymorphic specification in Haskell and Python — all under
-        the NeSyCat organisation on GitHub.
+    <section>
+      <div className="t-eyebrow">§ Informatics · Code</div>
+      <h2 style={h2}>One spec, three backends.</h2>
+      <p style={intro}>
+        NeSyCat Torch runs the same monad-polymorphic specification in Haskell and Python — all
+        under the NeSyCat organisation on GitHub.
       </p>
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-          gap: 16,
-          textAlign: 'left',
-          marginBottom: 32,
-        }}
-      >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 32 }}>
         {BACKENDS.map((b) => (
           <div key={b.name} className="surface" style={{ padding: 22 }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>

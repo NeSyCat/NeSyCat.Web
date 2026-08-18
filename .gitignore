@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# foreman orchestration ledger + scratch (session artifacts, not site code)
+/.foreman/
