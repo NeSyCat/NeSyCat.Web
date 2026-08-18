@@ -88,52 +88,45 @@ body {
   min-height: 100vh;
 }
 
-/* ── Brand-mark colour wheel ───────────────────────────────────────────
+/* ── Brand-mark colour field ───────────────────────────────────────────
    The diamond mark is the one piece of UI that deliberately carries its
    own multi-colour palette instead of a single DS semantic colour — this
    has no equivalent in the DS's single-primary model, so these are
-   scoped `--logo-*` and consumed ONLY by the diamond mark (SVG stroke
-   gradients + its corner rings/labels). Never reach for these outside
+   scoped `--logo-*` and consumed ONLY by the diamond mark (masked SVG
+   colour blobs + its corner rings/labels). Never reach for these outside
    the mark.
 
-   The four corner anchors sit at true colour-wheel hues — blue 219°,
-   green 136°, red 5°, magenta 292° (the actual wheel midpoint between
-   blue and red, not an RGB average of the two). --logo-blue's value
-   equals --color-primary (#3478F6) so the mark stays on-brand; it's
-   restated as its own literal here (rather than `var(--color-primary)`)
-   so every gradient stop it seeds resolves against the exact hue the
-   other stops were computed from. Each edge's three inner stops are the
-   true intermediate wheel hues between its two corners (cyan between
-   blue/green, amber between green/red, pink between red/magenta, violet
-   between magenta/blue) — a straight RGB lerp would instead pass through
-   a muddy grey/brown midpoint. A flat four-colour variant was tried and
-   rejected in review: the wheel is the chosen design. ──────────────── */
+   The outline is built the way Google's Gemini icon builds its colour
+   field: an SVG mask holds the diamond's silhouette, and large, heavily
+   blurred solid-colour circles sit behind it — only the sliver inside the
+   mask shows. Adjacent blobs overlap and blend purely through blur
+   falloff, so nothing is ever drawn as a seam or a stop; see
+   components/Explorer.tsx for the mask/filter/blob markup. Unlike a flat
+   four-colour version, the wheel is still here — it's just painted as
+   blobs instead of drawn as gradient stops: four blobs sit at the corners
+   (the four anchors below) and four more sit at the edge midpoints (the
+   four intermediate hues below), the same eight colours the old gradient
+   stroke's stops used. The corner anchors are also what the corner rings
+   and selected-label text key off directly. --logo-blue's value equals
+   --color-primary (#3478F6) so the mark stays on-brand; it's restated as
+   its own literal here (rather than `var(--color-primary)`) so it
+   resolves the same way the other seven literals do. ──────────────────── */
 :root {
   /* Corner anchors */
-  --logo-blue: #3478f6; /* left   — Mathematics, hue 219° (= --color-primary) */
-  --logo-green: #34a853; /* top    — Linguistics, hue 136° */
-  --logo-red: #ea4335; /* right  — Semiotics,   hue 5°   */
-  --logo-magenta: #d634f0; /* bottom — Informatics, hue 292° */
+  --logo-blue: #3478f6; /* left   — Mathematics */
+  --logo-green: #34a853; /* top    — Linguistics */
+  --logo-red: #ea4335; /* right  — Semiotics */
+  --logo-magenta: #d634f0; /* bottom — Informatics */
 
-  /* left → top edge, through cyan */
-  --logo-lt-1: #2db0ea;
-  --logo-lt-2: #27dcd4;
-  --logo-lt-3: #2dc389;
-
-  /* top → right edge, through amber */
-  --logo-tr-1: #57bd30;
-  --logo-tr-2: #b6d42a;
-  --logo-tr-3: #e09d2e;
-
-  /* right → bottom edge, through pink */
-  --logo-rb-1: #ec355e;
-  --logo-rb-2: #ed3596;
-  --logo-rb-3: #ef34d0;
-
-  /* bottom → left edge, through violet */
-  --logo-bl-1: #9e34f2;
-  --logo-bl-2: #6534f3;
-  --logo-bl-3: #343df5;
+  /* Edge-midpoint intermediates — true colour-wheel hues (walked through
+     hue space between their two neighbours), not RGB averages, which
+     would instead pass through a muddy grey/brown. Consumed only by the
+     midpoint blobs in Explorer.tsx, to keep the middle of each edge
+     saturated rather than fading to the corner blobs' blur tails. */
+  --logo-cyan: #27dcd4; /* upper-left  edge — blue → green */
+  --logo-amber: #b6d42a; /* upper-right edge — green → red */
+  --logo-pink: #ed3596; /* lower-right edge — red → magenta */
+  --logo-violet: #6534f3; /* lower-left  edge — magenta → blue */
 
   /* Centre dot fill — deliberately a literal white rather than
      var(--color-card): the brief asks for the dot to read as
@@ -420,32 +413,45 @@ body {
   opacity: 0;
 }
 
+/* N1: the corner hover/selection ring (r=18, centred 5 units inward from
+   the vertex — see RING_OFFSET in Explorer.tsx) reaches 13 units OUTWARD
+   past the vertex once you account for that inward offset. Its outer edge
+   is therefore 13/200 = 6.5% of the figure's width, i.e.
+   0.065 * var(--diamond-size) px, measured from the vertex the button (and
+   the label) are centred on. The old fixed 12px/10px margins didn't scale
+   with the figure, so on larger viewports (--diamond-size growing toward
+   its 52vh cap) the ring's reach overtook the label. These margins now
+   scale with the figure instead: 0.09 * var(--diamond-size) places the
+   label's near edge 18 units from the vertex — ~5 units of clear air past
+   the ring's 13 — then subtracts the 22px half-button the offset is
+   already measured from. The max() floor keeps the small/stacked layouts
+   (where the calc would go negative) at the original fixed offset. */
 .hotspot--linguistics .hotspot-label {
   left: 50%;
   bottom: 100%;
   transform: translateX(-50%);
-  margin-bottom: 10px;
+  margin-bottom: max(10px, calc(var(--diamond-size) * 0.09 - 22px));
   text-align: center;
 }
 .hotspot--mathematics .hotspot-label {
   right: 100%;
   top: 50%;
   transform: translateY(-50%);
-  margin-right: 12px;
+  margin-right: max(12px, calc(var(--diamond-size) * 0.09 - 22px));
   text-align: right;
 }
 .hotspot--semiotics .hotspot-label {
   left: 100%;
   top: 50%;
   transform: translateY(-50%);
-  margin-left: 12px;
+  margin-left: max(12px, calc(var(--diamond-size) * 0.09 - 22px));
   text-align: left;
 }
 .hotspot--informatics .hotspot-label {
   left: 50%;
   top: 100%;
   transform: translateX(-50%);
-  margin-top: 10px;
+  margin-top: max(10px, calc(var(--diamond-size) * 0.09 - 22px));
   text-align: center;
 }
 /* G4/K1: "Logic" sits ABOVE the center dot, clear of its edge — the hotspot

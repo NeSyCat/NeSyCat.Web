@@ -193,56 +193,112 @@ export default function Explorer({ overview, logic, mathematics, semiotics, info
           <div className="diamond-figure">
             <svg viewBox="0 0 200 200" aria-hidden="true" focusable="false">
               <defs>
-                {/* One gradient per edge, colour-wheel-true (not an RGB
-                    lerp) between its two corner anchors — see the --logo-*
-                    block in globals.css for why the stops are what they
-                    are. Adjacent gradients share the identical colour at
-                    each vertex, so the round-capped segments below meet
-                    there seamlessly. */}
-                <linearGradient id="logo-edge-lt" gradientUnits="userSpaceOnUse" x1={14} y1={100} x2={100} y2={14}>
-                  <stop offset="0%" stopColor="var(--logo-blue)" />
-                  <stop offset="25%" stopColor="var(--logo-lt-1)" />
-                  <stop offset="50%" stopColor="var(--logo-lt-2)" />
-                  <stop offset="75%" stopColor="var(--logo-lt-3)" />
-                  <stop offset="100%" stopColor="var(--logo-green)" />
-                </linearGradient>
-                <linearGradient id="logo-edge-tr" gradientUnits="userSpaceOnUse" x1={100} y1={14} x2={186} y2={100}>
-                  <stop offset="0%" stopColor="var(--logo-green)" />
-                  <stop offset="25%" stopColor="var(--logo-tr-1)" />
-                  <stop offset="50%" stopColor="var(--logo-tr-2)" />
-                  <stop offset="75%" stopColor="var(--logo-tr-3)" />
-                  <stop offset="100%" stopColor="var(--logo-red)" />
-                </linearGradient>
-                <linearGradient id="logo-edge-rb" gradientUnits="userSpaceOnUse" x1={186} y1={100} x2={100} y2={186}>
-                  <stop offset="0%" stopColor="var(--logo-red)" />
-                  <stop offset="25%" stopColor="var(--logo-rb-1)" />
-                  <stop offset="50%" stopColor="var(--logo-rb-2)" />
-                  <stop offset="75%" stopColor="var(--logo-rb-3)" />
-                  <stop offset="100%" stopColor="var(--logo-magenta)" />
-                </linearGradient>
-                <linearGradient id="logo-edge-bl" gradientUnits="userSpaceOnUse" x1={100} y1={186} x2={14} y2={100}>
-                  <stop offset="0%" stopColor="var(--logo-magenta)" />
-                  <stop offset="25%" stopColor="var(--logo-bl-1)" />
-                  <stop offset="50%" stopColor="var(--logo-bl-2)" />
-                  <stop offset="75%" stopColor="var(--logo-bl-3)" />
-                  <stop offset="100%" stopColor="var(--logo-blue)" />
-                </linearGradient>
+                {/* Gemini-icon technique: the outline is a MASK (one round-
+                    joined polygon stroke, so there are no per-edge caps to
+                    overlap at the vertices), and a handful of large, heavily
+                    blurred, solid-colour blobs sit behind it — only the
+                    slice inside the mask shows. Colour only ever meets
+                    colour through blur falloff, never through a drawn seam,
+                    so there is nothing that CAN band or overlap. See the
+                    --logo-* block in globals.css for the palette. */}
+                <mask id="logo-outline-mask" maskUnits="userSpaceOnUse" x={-20} y={-20} width={240} height={240}>
+                  <polygon
+                    points="100,14 186,100 100,186 14,100"
+                    fill="none"
+                    stroke="#fff"
+                    strokeWidth={13}
+                    strokeLinejoin="round"
+                  />
+                </mask>
+                {/* Three blur strengths, shared across all four corners /
+                    edge midpoints: a tighter one for the small blob that
+                    saturates each vertex, a heavier one for the large blob
+                    that carries the colour out across the neighbouring
+                    edges, and a mid-weight one for the edge-midpoint blobs
+                    below that keep the middle of each edge from ever
+                    thinning out to just the two corners' blur tails (see
+                    the midpoint blob comment below for why those exist).
+                    Generous userSpaceOnUse regions on all three (well
+                    beyond the 0–200 viewBox) so the blur is never clipped
+                    to a hard rectangular edge. */}
+                <filter id="logo-blur-sm" x={-100} y={-100} width={400} height={400} filterUnits="userSpaceOnUse">
+                  <feGaussianBlur stdDeviation={11} />
+                </filter>
+                <filter id="logo-blur-lg" x={-100} y={-100} width={400} height={400} filterUnits="userSpaceOnUse">
+                  <feGaussianBlur stdDeviation={20} />
+                </filter>
+                <filter id="logo-blur-mid" x={-100} y={-100} width={400} height={400} filterUnits="userSpaceOnUse">
+                  <feGaussianBlur stdDeviation={12} />
+                </filter>
               </defs>
-              {/* Fill-only, behind the stroke segments — a faint neutral
+              {/* Fill-only, behind the colour field — a faint neutral
                   wash (foreground, not primary) so it doesn't bias the
                   multicolour border toward any one corner's hue. */}
               <polygon
                 points="100,14 186,100 100,186 14,100"
                 fill="color-mix(in srgb, var(--color-foreground) 8%, transparent)"
               />
-              {/* Four edges, each its own gradient. strokeLinecap="round"
-                  reproduces the old single-polygon round-join corners
-                  exactly: the cap radius (strokeWidth/2 = 6.5) is the same
-                  bulge the round join produced. */}
-              <line x1={14} y1={100} x2={100} y2={14} stroke="url(#logo-edge-lt)" strokeWidth={13} strokeLinecap="round" />
-              <line x1={100} y1={14} x2={186} y2={100} stroke="url(#logo-edge-tr)" strokeWidth={13} strokeLinecap="round" />
-              <line x1={186} y1={100} x2={100} y2={186} stroke="url(#logo-edge-rb)" strokeWidth={13} strokeLinecap="round" />
-              <line x1={100} y1={186} x2={14} y2={100} stroke="url(#logo-edge-bl)" strokeWidth={13} strokeLinecap="round" />
+              {/* The masked colour field itself: two blobs per corner (a
+                  small saturated one a few units out, a large soft one
+                  further out still), pushed just past their vertex rather
+                  than centred on it — as in the reference, the colour reads
+                  as bleeding in from outside the silhouette rather than
+                  sitting inside it. Each corner keeps the mapping the
+                  rings/labels already use — green top (Linguistics), red
+                  right (Semiotics), magenta bottom (Informatics), blue left
+                  (Mathematics). The vertex itself sits well inside each
+                  blob's solid core (not out in its blurred falloff), so the
+                  corner hue still reads fully saturated there. The
+                  edge-midpoint blobs below carry their own saturated
+                  intermediate hue into the middle of each edge — see the
+                  paint-order comment just below for why they sit between
+                  the large and small corner layers rather than underneath
+                  both. */}
+              <g mask="url(#logo-outline-mask)">
+                {/* Paint order, back to front, is corner-LARGE → edge-MID →
+                    corner-SMALL — deliberately not the more obvious
+                    mid-then-large-then-small. Two corner blurs alone leave
+                    the exact middle of each edge as nothing but their
+                    overlapping falloff tails, which — with the large blobs
+                    painted last — sit on TOP of the midpoint colour and
+                    average directly against each other in a region where
+                    both still have real alpha there. Green-over-red (and
+                    vice versa) averages straight to a muddy olive; that is
+                    the wash this whole fix exists to remove. Putting the
+                    intermediate (colour-wheel-true — cyan, amber, pink,
+                    violet, the same wheel the old gradient stroke used)
+                    blob ON TOP of both large corner blobs instead means it
+                    fully overwrites them right where its own alpha is
+                    highest (the midpoint), so the hand-off there reads as
+                    the intermediate hue, not a green/red blend. The small
+                    corner blobs go on top of THAT, so right at each vertex
+                    the pure corner hue still wins outright — their own
+                    alpha there is ~1 and the midpoint blob's has long
+                    since decayed to ~0.
+
+                    Every blob below gets `filter` on the CIRCLE itself, not
+                    on a shared `<g>` wrapping several of them — a filter
+                    applied to a group blurs the group's already-composited
+                    raster as one signal, so two DIFFERENT circles whose
+                    blur halos later overlap get their raw colours averaged
+                    directly in RGB space regardless of paint order, which
+                    would defeat the ordering trick above. Filtering each
+                    circle independently keeps them compositing normally. */}
+                <circle cx={100} cy={-18} r={80} fill="var(--logo-green)" filter="url(#logo-blur-lg)" />
+                <circle cx={218} cy={100} r={80} fill="var(--logo-red)" filter="url(#logo-blur-lg)" />
+                <circle cx={100} cy={218} r={80} fill="var(--logo-magenta)" filter="url(#logo-blur-lg)" />
+                <circle cx={-18} cy={100} r={80} fill="var(--logo-blue)" filter="url(#logo-blur-lg)" />
+
+                <circle cx={57} cy={57} r={42} fill="var(--logo-cyan)" filter="url(#logo-blur-mid)" />
+                <circle cx={143} cy={57} r={42} fill="var(--logo-amber)" filter="url(#logo-blur-mid)" />
+                <circle cx={143} cy={143} r={42} fill="var(--logo-pink)" filter="url(#logo-blur-mid)" />
+                <circle cx={57} cy={143} r={42} fill="var(--logo-violet)" filter="url(#logo-blur-mid)" />
+
+                <circle cx={100} cy={-4} r={55} fill="var(--logo-green)" filter="url(#logo-blur-sm)" />
+                <circle cx={204} cy={100} r={55} fill="var(--logo-red)" filter="url(#logo-blur-sm)" />
+                <circle cx={100} cy={204} r={55} fill="var(--logo-magenta)" filter="url(#logo-blur-sm)" />
+                <circle cx={-4} cy={100} r={55} fill="var(--logo-blue)" filter="url(#logo-blur-sm)" />
+              </g>
               {AREAS.map((a) => {
                 const isHovered = hovered === a.id
                 const isSelected = selected === a.id
