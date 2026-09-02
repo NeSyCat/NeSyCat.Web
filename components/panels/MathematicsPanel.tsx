@@ -1,4 +1,5 @@
 import { codeToHtml } from 'shiki'
+import { GitHubIcon, LinkButton } from '../Buttons'
 import { Tex } from '../Tex'
 
 const h2: React.CSSProperties = {
@@ -107,6 +108,13 @@ export default async function MathematicsPanel() {
           {LEAN_SNIPPET}
         </pre>
       )}
+
+      <div style={{ marginTop: 18 }}>
+        <LinkButton href="https://github.com/NeSyCat/NeSyCat.Mathematics" variant="primary" big external>
+          <GitHubIcon size={16} /> github.com/NeSyCat/NeSyCat.Mathematics{' '}
+          <span style={{ opacity: 0.7, fontSize: 12 }}>↗</span>
+        </LinkButton>
+      </div>
     </section>
   )
 }
